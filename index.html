@@ -9,6 +9,7 @@ html, body {
   margin: 0;
   height: 200vh;
   background: black;
+  overflow-x: hidden;
 }
 
 canvas {
@@ -30,22 +31,26 @@ const scene = new THREE.Scene();
 const camera = new THREE.OrthographicCamera(-1,1,1,-1,0,1);
 
 const renderer = new THREE.WebGLRenderer({
-  canvas: document.getElementById('scene')
+  canvas: document.getElementById('scene'),
+  alpha: true
 });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 const loader = new THREE.TextureLoader();
 
-// TEMP placeholders (we’ll add images next)
-const gradient = loader.load("gradient.jpg");
+const gradient = loader.load("color_gradient_ultra_seamless.jpg"); // <-- NEW IMAGE NAME
 const glass = loader.load("glass-lines.png");
+
+gradient.wrapS = THREE.RepeatWrapping;
+gradient.wrapT = THREE.RepeatWrapping;
 
 const material = new THREE.ShaderMaterial({
   uniforms: {
     uTexture: { value: gradient },
     uGlass: { value: glass },
-    uScroll: { value: 0 }
+    uScroll: { value: 0 },
+    uAspect: { value: window.innerWidth / window.innerHeight }
   },
   vertexShader: `
     varying vec2 vUv;
@@ -59,11 +64,29 @@ const material = new THREE.ShaderMaterial({
     uniform sampler2D uTexture;
     uniform sampler2D uGlass;
     uniform float uScroll;
+    uniform float uAspect;
 
     void main() {
-      float d = texture2D(uGlass, vec2(vUv.x + uScroll, vUv.y)).r;
-      vec2 uv = vUv + vec2(d * 0.15, 0.0);
-      gl_FragColor = texture2D(uTexture, uv);
+      // IMAGE IS VERTICAL (rotated)
+      float imgAspect = 600.0 / 4096.0;
+
+      vec2 uv = vUv;
+
+      // Fit image to screen without stretching
+      if(uAspect > imgAspect) {
+        uv.y = (vUv.y - 0.5) * (uAspect / imgAspect) + 0.5;
+      } else {
+        uv.x = (vUv.x - 0.5) * (imgAspect / uAspect) + 0.5;
+      }
+
+      // SCROLL THE IMAGE VERTICALLY
+      uv.y += uScroll;
+
+      // GLASS LINES STAY FIXED (NOT MOVING)
+      float d = texture2D(uGlass, vUv).r;
+      vec2 displaced = uv + vec2(d * 0.15, 0.0);
+
+      gl_FragColor = texture2D(uTexture, displaced);
     }
   `
 });
@@ -74,8 +97,13 @@ const mesh = new THREE.Mesh(
 );
 scene.add(mesh);
 
+window.addEventListener("resize", () => {
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  material.uniforms.uAspect.value = window.innerWidth / window.innerHeight;
+});
+
 window.addEventListener("scroll", () => {
-  material.uniforms.uScroll.value = window.scrollY * 0.0005;
+  material.uniforms.uScroll.value = window.scrollY * 0.0006;
   renderer.render(scene, camera);
 });
 
@@ -84,3 +112,4 @@ renderer.render(scene, camera);
 
 </body>
 </html>
+
