@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Glass Scroll Effect</title>
+
+<style>
+html, body {
+  margin: 0;
+  height: 200vh;
+  background: black;
+}
+
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="scene"></canvas>
+
+<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+
+<script>
+const scene = new THREE.Scene();
+const camera = new THREE.OrthographicCamera(-1,1,1,-1,0,1);
+
+const renderer = new THREE.WebGLRenderer({
+  canvas: document.getElementById('scene')
+});
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+const loader = new THREE.TextureLoader();
+
+// TEMP placeholders (we’ll add images next)
+const gradient = loader.load("gradient.jpg");
+const glass = loader.load("glass-lines.png");
+
+const material = new THREE.ShaderMaterial({
+  uniforms: {
+    uTexture: { value: gradient },
+    uGlass: { value: glass },
+    uScroll: { value: 0 }
+  },
+  vertexShader: `
+    varying vec2 vUv;
+    void main() {
+      vUv = uv;
+      gl_Position = vec4(position,1.0);
+    }
+  `,
+  fragmentShader: `
+    varying vec2 vUv;
+    uniform sampler2D uTexture;
+    uniform sampler2D uGlass;
+    uniform float uScroll;
+
+    void main() {
+      float d = texture2D(uGlass, vec2(vUv.x + uScroll, vUv.y)).r;
+      vec2 uv = vUv + vec2(d * 0.15, 0.0);
+      gl_FragColor = texture2D(uTexture, uv);
+    }
+  `
+});
+
+const mesh = new THREE.Mesh(
+  new THREE.PlaneGeometry(2,2),
+  material
+);
+scene.add(mesh);
+
+window.addEventListener("scroll", () => {
+  material.uniforms.uScroll.value = window.scrollY * 0.0005;
+  renderer.render(scene, camera);
+});
+
+renderer.render(scene, camera);
+</script>
+
+</body>
+</html>
