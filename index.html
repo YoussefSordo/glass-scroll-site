@@ -1,129 +1,40 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Glass Scroll Effect</title>
-<style>
-  html, body {
-    margin: 0;
-    height: 4096px;
-    background: black;
-    overflow-x: hidden;
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sordo Studio</title>
 
-  canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-  }
-</style>
+  <style>
+    /* Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      overflow-x: hidden; /* absolutely no horizontal scroll */
+      background: #000;
+    }
+
+    /* Full-width scrollable image */
+    .background-image {
+      width: 100vw;
+      height: auto;
+      display: block;
+    }
+  </style>
 </head>
+
 <body>
-<canvas id="scene"></canvas>
 
-<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
-<script>
-const scene = new THREE.Scene();
-const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+  <img
+    src="color_gradient_ultra_seamless.jpg"
+    alt="Gradient Background"
+    class="background-image"
+  >
 
-const renderer = new THREE.WebGLRenderer({
-  canvas: document.getElementById('scene'),
-  alpha: true
-});
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-const loader = new THREE.TextureLoader();
-
-const gradient = loader.load("color_gradient_ultra_seamless.jpg");
-const glass = loader.load("glass-lines.png");
-
-gradient.wrapS = THREE.RepeatWrapping;
-gradient.wrapT = THREE.RepeatWrapping;
-glass.wrapS = THREE.RepeatWrapping;
-glass.wrapT = THREE.RepeatWrapping;
-
-const material = new THREE.ShaderMaterial({
-  uniforms: {
-    uTexture: { value: gradient },
-    uGlass: { value: glass },
-    uScroll: { value: 0 },
-    uGlassScrollScale: { value: 0.18 },
-    uAspect: { value: window.innerWidth / window.innerHeight }
-  },
-  vertexShader: `
-    varying vec2 vUv;
-    void main() {
-      vUv = uv;
-      gl_Position = vec4(position, 1.0);
-    }
-  `,
-  fragmentShader: `
-    varying vec2 vUv;
-    uniform sampler2D uTexture;
-    uniform sampler2D uGlass;
-    uniform float uScroll;
-    uniform float uGlassScrollScale;
-    uniform float uAspect;
-
-    void main() {
-      // Rotate gradient 90 degrees
-      vec2 gradUV = vec2(vUv.y, vUv.x);
-
-      // Cover logic
-      float imgAspect = 600.0 / 4096.0;
-      float screenAspect = uAspect;
-
-      vec2 coverUV = gradUV;
-
-      if (screenAspect > imgAspect) {
-        float scale = screenAspect / imgAspect;
-        coverUV.x = (gradUV.x - 0.5) * scale + 0.5;
-      } else {
-        float scale = imgAspect / screenAspect;
-        coverUV.y = (gradUV.y - 0.5) * scale + 0.5;
-      }
-
-      // Use fract to repeat and avoid black edges
-      coverUV = fract(coverUV);
-
-      // Scroll vertically
-      coverUV.y += uScroll;
-
-      // Glass (fixed but slightly scrolls)
-      vec2 glassUV = vUv;
-      glassUV.y += uScroll * uGlassScrollScale;
-
-      float d = texture2D(uGlass, glassUV).r;
-      vec2 displaced = coverUV + vec2(d * 0.15, 0.0);
-
-      gl_FragColor = texture2D(uTexture, displaced);
-    }
-  `
-});
-
-const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
-scene.add(mesh);
-
-window.addEventListener("resize", () => {
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  material.uniforms.uAspect.value = window.innerWidth / window.innerHeight;
-});
-
-// Scroll based on real scroll height
-window.addEventListener("scroll", () => {
-  const maxScroll = document.body.scrollHeight - window.innerHeight;
-  const scrollRatio = window.scrollY / maxScroll;
-  material.uniforms.uScroll.value = scrollRatio * 2.0; // adjust speed later
-});
-
-function animate() {
-  requestAnimationFrame(animate);
-  renderer.render(scene, camera);
-}
-animate();
-</script>
 </body>
 </html>
