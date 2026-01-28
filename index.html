@@ -6,6 +6,9 @@
   <title>Sordo Studio</title>
 
   <style>
+    /* ==========================
+       RESET / BASIC STYLES
+       ========================== */
     * {
       margin: 0;
       padding: 0;
@@ -18,7 +21,9 @@
       background: #000;
     }
 
-    /* Gradient image – now naturally vertical */
+    /* ==========================
+       GRADIENT IMAGE CONTAINER
+       ========================== */
     .image-wrapper {
       width: 100vw;
     }
@@ -29,7 +34,13 @@
       height: auto;   /* natural vertical scroll */
     }
 
-    /* Laminated glass overlay */
+    /* ==========================
+       LAMINATED GLASS OVERLAY
+       ==========================
+       - stronger effect (more visible)
+       - fixed in screen
+       - does NOT move with scroll
+    */
     .glass-overlay {
       position: fixed;
       top: 0;
@@ -41,18 +52,20 @@
 
       background-image: url("glass-lines.png");
       background-repeat: repeat;
-      background-size: auto 100vh; /* 617 px stays horizontal */
+      background-size: auto 100vh; /* 617 px side horizontal */
       background-position: center top;
 
       mix-blend-mode: overlay;
-      opacity: 0.35;
+      opacity: 0.6; /* stronger glass effect */
     }
   </style>
 </head>
 
 <body>
 
-  <!-- Gradient -->
+  <!-- ==========================
+       GRADIENT IMAGE (SCROLLABLE)
+       ========================== -->
   <div class="image-wrapper">
     <img
       src="color_gradient_ultra_seamless.jpg"
@@ -61,17 +74,20 @@
     >
   </div>
 
-  <!-- Glass -->
+  <!-- ==========================
+       GLASS OVERLAY (FIXED)
+       ========================== -->
   <div class="glass-overlay"></div>
 
-  <!-- Scroll interaction -->
+  <!-- ==========================
+       SCROLL SCRIPT
+       ==========================
+       - optional for future scroll-based effects
+       - currently glass is fixed
+  -->
   <script>
-    const glass = document.querySelector('.glass-overlay');
-
-    window.addEventListener('scroll', () => {
-      glass.style.backgroundPosition =
-        `center ${window.scrollY * 0.15}px`;
-    });
+    // Currently no scroll movement for glass
+    // You can later add subtle parallax if desired
   </script>
 
 </body>
