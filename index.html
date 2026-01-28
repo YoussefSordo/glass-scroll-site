@@ -6,7 +6,6 @@
   <title>Sordo Studio</title>
 
   <style>
-    /* Reset */
     * {
       margin: 0;
       padding: 0;
@@ -15,26 +14,38 @@
 
     html, body {
       width: 100%;
-      overflow-x: hidden; /* absolutely no horizontal scroll */
+      overflow-x: hidden;
       background: #000;
     }
 
-    /* Full-width scrollable image */
-    .background-image {
+    /* Wrapper creates vertical scroll space */
+    .image-wrapper {
       width: 100vw;
       height: auto;
+      overflow: hidden;
+    }
+
+    /* Rotated image */
+    .rotated-image {
       display: block;
+      width: auto;
+      height: 100vw; /* rotated width becomes height */
+      transform: rotate(90deg);
+      transform-origin: center center;
+      margin: auto;
     }
   </style>
 </head>
 
 <body>
 
-  <img
-    src="color_gradient_ultra_seamless.jpg"
-    alt="Gradient Background"
-    class="background-image"
-  >
+  <div class="image-wrapper">
+    <img
+      src="color_gradient_ultra_seamless.jpg"
+      alt="Gradient Background"
+      class="rotated-image"
+    >
+  </div>
 
 </body>
 </html>
