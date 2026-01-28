@@ -19,24 +19,23 @@
       background: #000;
     }
 
-    /* ===== EXISTING GRADIENT CODE (UNCHANGED) ===== */
+    /* ===== GRADIENT (RESTORED – DO NOT TOUCH) ===== */
 
     .image-wrapper {
       width: 100vw;
-      height: auto;
       overflow: hidden;
     }
 
     .rotated-image {
       display: block;
-      width: auto;
-      height: 100vw;
+      width: 100vw;     /* THIS is the key */
+      height: auto;
       transform: rotate(90deg);
       transform-origin: center center;
       margin: auto;
     }
 
-    /* ===== LAMINATED GLASS OVERLAY (NEW) ===== */
+    /* ===== LAMINATED GLASS (PURE OVERLAY) ===== */
 
     .glass-overlay {
       position: fixed;
@@ -49,7 +48,7 @@
 
       background-image: url("glass-lines.png");
       background-repeat: repeat;
-      background-size: auto 100vh; /* 617px side stays horizontal */
+      background-size: auto 100vh; /* 617 px side = horizontal */
       background-position: center top;
 
       mix-blend-mode: overlay;
@@ -60,7 +59,7 @@
 
 <body>
 
-  <!-- ===== GRADIENT IMAGE ===== -->
+  <!-- Gradient -->
   <div class="image-wrapper">
     <img
       src="color_gradient_ultra_seamless.jpg"
@@ -69,20 +68,19 @@
     >
   </div>
 
-  <!-- ===== GLASS LAYER ===== -->
+  <!-- Glass -->
   <div class="glass-overlay"></div>
 
-  <!-- ===== SCROLL INTERACTION ===== -->
+  <!-- Scroll interaction -->
   <script>
     const glass = document.querySelector('.glass-overlay');
 
     window.addEventListener('scroll', () => {
-      const scrollY = window.scrollY;
-
-      /* subtle laminated glass displacement */
-      glass.style.backgroundPosition = `center ${scrollY * 0.15}px`;
+      glass.style.backgroundPosition =
+        `center ${window.scrollY * 0.15}px`;
     });
   </script>
 
 </body>
 </html>
+
