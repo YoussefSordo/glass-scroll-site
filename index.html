@@ -18,21 +18,18 @@
       background: #000;
     }
 
-    /* Wrapper creates vertical scroll space */
+    /* Stable reference container */
     .image-wrapper {
       width: 100vw;
-      height: auto;
       overflow: hidden;
     }
 
-    /* Rotated image */
     .rotated-image {
       display: block;
-      width: auto;
-      height: 100vw; /* rotated width becomes height */
+      height: 100%;
+      width: 100%;
       transform: rotate(90deg);
       transform-origin: center center;
-      margin: auto;
     }
   </style>
 </head>
@@ -49,4 +46,3 @@
 
 </body>
 </html>
-
