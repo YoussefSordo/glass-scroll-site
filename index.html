@@ -18,37 +18,61 @@
       background: #000;
     }
 
-    /* This div creates the correct vertical scroll space */
+    /* Gradient image – now naturally vertical */
     .image-wrapper {
       width: 100vw;
-      height: calc(100vw * (4096 / 600)); /* force long dimension */
-      position: relative;
-      overflow: hidden;
     }
 
-    .rotated-image {
-      position: absolute;
-      top: 50%;
-      left: 50%;
+    .gradient-image {
+      display: block;
+      width: 100vw;   /* fill screen width */
+      height: auto;   /* natural vertical scroll */
+    }
 
-      height: 100vw;      /* short side fills screen */
-      width: auto;
+    /* Laminated glass overlay */
+    .glass-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 10;
 
-      transform: translate(-50%, -50%) rotate(90deg);
-      transform-origin: center;
+      background-image: url("glass-lines.png");
+      background-repeat: repeat;
+      background-size: auto 100vh; /* 617 px stays horizontal */
+      background-position: center top;
+
+      mix-blend-mode: overlay;
+      opacity: 0.35;
     }
   </style>
 </head>
 
 <body>
 
+  <!-- Gradient -->
   <div class="image-wrapper">
     <img
       src="color_gradient_ultra_seamless.jpg"
       alt="Gradient Background"
-      class="rotated-image"
+      class="gradient-image"
     >
   </div>
+
+  <!-- Glass -->
+  <div class="glass-overlay"></div>
+
+  <!-- Scroll interaction -->
+  <script>
+    const glass = document.querySelector('.glass-overlay');
+
+    window.addEventListener('scroll', () => {
+      glass.style.backgroundPosition =
+        `center ${window.scrollY * 0.15}px`;
+    });
+  </script>
 
 </body>
 </html>
