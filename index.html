@@ -1,84 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gradient Scroll Test</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sordo Studio</title>
-
-  <style>
-    /* ==========================
-       RESET / BASIC STYLES
-       ========================== */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    html, body {
-      width: 100%;
-      overflow-x: hidden;
-      background: #000;
-    }
-
-    /* ==========================
-       GRADIENT IMAGE CONTAINER
-       ========================== */
-    .image-wrapper {
-      width: 100vw;
-    }
-
-    .gradient-image {
-      display: block;
-      width: 100vw;   /* fill screen width */
-      height: auto;   /* natural vertical scroll */
-    }
-
-    /* ==========================
-       LAMINATED GLASS OVERLAY
-       ==========================
-       - fills screen without repeating
-       - scales to fit viewport
-       - maintains aspect ratio
-       - fixed on screen
-    */
-    .glass-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      pointer-events: none;
-      z-index: 10;
-
-      background-image: url("glass-lines.png");
-      background-repeat: no-repeat;        /* do not repeat */
-      background-size: cover;              /* scale to fill viewport */
-      background-position: top left;       /* show top-left portion by default */
-
-      mix-blend-mode: overlay;
-      opacity: 0.6;                        /* stronger effect */
-    }
-  </style>
+  <title>Gradient Scroll Test</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-  <!-- ==========================
-       GRADIENT IMAGE (SCROLLABLE)
-       ========================== -->
-  <div class="image-wrapper">
-    <img
-      src="color_gradient_ultra_seamless.jpg"
-      alt="Gradient Background"
-      class="gradient-image"
-    >
+  <div class="gradient-wrapper">
+    <div class="gradient normal"></div>
+    <div class="gradient mirror"></div>
+    <div class="gradient normal"></div>
+    <div class="gradient mirror"></div>
+    <div class="gradient normal"></div>
   </div>
-
-  <!-- ==========================
-       GLASS OVERLAY (FIXED)
-       ========================== -->
-  <div class="glass-overlay"></div>
 
 </body>
 </html>
