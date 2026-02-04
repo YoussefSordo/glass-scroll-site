@@ -1,26 +1,62 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <!-- Basic page metadata -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Glass Scroll</title>
-  <link rel="stylesheet" href="./style.css?v=5" />
+  <title>Frosted Glass (FYI-style)</title>
+
+  <!-- Link to stylesheet (same folder) -->
+  <link rel="stylesheet" href="./style.css?v=1" />
 </head>
 
 <body>
-  <!-- scrolling background -->
-  <main class="bg">
-    <section class="panel normal"></section>
-    <section class="panel mirror"></section>
-    <section class="panel normal"></section>
-    <section class="panel mirror"></section>
-    <section class="panel normal"></section>
-  </main>
+  <!--
+    This is the full-screen "stage" like the FYI demo:
+    - black background
+    - centered figure
+  -->
+  <div class="stage" id="stage">
+    <div
+      class="figure"
+      style="
+        --glassSectionWidth: 24px;  /* stripe width */
+        --blur: 20px;              /* blur strength */
+        --glassRotation: -16deg;   /* glass angle */
+        --gradientRotation: 12deg; /* source gradient angle */
+      "
+    >
+      <!--
+        COLOR SOURCE LAYER (the rectangle behind)
+        This is what makes color-dodge look “refractive”.
+      -->
+      <div class="source"></div>
 
-  <!-- fixed glass -->
-  <div class="glass" aria-hidden="true">
-    <div class="frost"></div>
-    <div class="sheen"></div>
+      <!--
+        FROSTED GLASS LAYER (sits on top)
+        Moves slightly with pointer via --x and --y
+      -->
+      <div class="glass"></div>
+    </div>
   </div>
+
+  <script>
+    // Pointer-driven movement (matches FYI concept: subtle offset to feel "alive")
+    const stage = document.getElementById("stage");
+
+    stage.addEventListener("pointermove", (e) => {
+      const r = stage.getBoundingClientRect();
+      const nx = (e.clientX - r.left) / r.width;   // 0..1
+      const ny = (e.clientY - r.top) / r.height;   // 0..1
+
+      // Convert to -1..1 so it moves left/right, up/down around center
+      const x = (nx - 0.5) * 2;
+      const y = (ny - 0.5) * 2;
+
+      // Put vars on the stage so CSS can use them
+      stage.style.setProperty("--x", x.toFixed(3));
+      stage.style.setProperty("--y", y.toFixed(3));
+    });
+  </script>
 </body>
 </html>
