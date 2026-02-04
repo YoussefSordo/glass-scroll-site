@@ -1,89 +1,114 @@
 /* ==================================================
-   0) RESET & BASE
-   ================================================== */
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+   0) RESET + BASE
+================================================== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 html, body {
   width: 100%;
   min-height: 100%;
   overflow-x: hidden;
-  background: #000; /* prevents white screen if image fails */
+
+  /* Important: avoid “white flash” and help blend modes read correctly */
+  background: #000113;
 }
+
+/* This helps mix-blend-mode behave predictably */
+body { isolation: isolate; }
 
 /* ==================================================
    1) SCROLLING BACKGROUND
-   ================================================== */
+================================================== */
+.bg { width: 100%; }
 
-.bg {
-  width: 100%;
-}
-
-/* One full-screen background panel */
 .panel {
   width: 100vw;
   height: 100vh;
-
-  /* your gradient image */
-  background-image: url("./gradient.jpg?v=2");
+  background-image: url("./gradient.jpg?v=3");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
 
-/* Vertical mirror every other panel */
-.panel.mirror {
-  transform: scaleY(-1);
-}
+.panel.mirror { transform: scaleY(-1); }
 
 /* ==================================================
-   2) FIXED FROSTED GLASS
-   ================================================== */
-
+   2) FIXED FROSTED GLASS (closer to Frontend FYI)
+================================================== */
 .glass {
   position: fixed;
   inset: 0;
   z-index: 10;
   pointer-events: none;
 
-  /* blur + saturation = frosted glass */
-  backdrop-filter: blur(18px) saturate(160%);
-  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  /* Core “frost” */
+  backdrop-filter: blur(22px) saturate(170%) contrast(115%);
+  -webkit-backdrop-filter: blur(22px) saturate(170%) contrast(115%);
 
-  /* very light base tint (DO NOT increase too much) */
-  background: rgba(255, 255, 255, 0.03);
+  /* Keep base tint low so it never washes to white */
+  background: rgba(255, 255, 255, 0.02);
+
+  /* Subtle edge depth so glass reads on dark too */
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.16),
+    inset 0 -1px 0 rgba(0,0,0,0.22);
 }
 
 /* ==================================================
-   3) GLASS LINES (2× WIDER)
-   ================================================== */
-
+   3) “FROST LINES” THAT STAY VISIBLE ON BLACK
+   Key change: the stripes contain DARK + LIGHT,
+   then use color-dodge like the example.
+================================================== */
 .glass::before {
   content: "";
   position: absolute;
   inset: 0;
 
   /*
-    Horizontal glass lines
-    BEFORE:
-      line = 2px
-    NOW (2× wider):
-      line = 4px
+    Horizontal repeating “frost” bands:
+    - light -> dark core -> bright edge
+    This is the trick that keeps structure on dark backgrounds.
   */
   background: repeating-linear-gradient(
     to bottom,
-    rgba(255, 255, 255, 0.14) 0px,
-    rgba(255, 255, 255, 0.14) 4px,  /* ← LINE THICKNESS (2× wider) */
-    rgba(255, 255, 255, 0.00) 14px  /* spacing between lines */
+    rgba(255, 255, 255, 0.06) 0%,
+    rgba(0,   0,   0,   0.42) 49%,
+    rgba(255, 255, 255, 0.28) 100%
   );
 
-  opacity: 0.55;
-  mix-blend-mode: overlay;
+  /* Controls the band “width” (smaller = more bands) */
+  background-size: 100% 24px; /* try 18px / 24px / 30px */
+
+  /* This is what makes it pop on dark, like FYI */
+  mix-blend-mode: color-dodge;
+
+  /* Keep it strong enough to read over black */
+  opacity: 0.85;
 }
 
 /* ==================================================
-   4) SOFT
+   4) GLASS HIGHLIGHTS (adds that “real pane” sheen)
+================================================== */
+.glass::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background:
+    radial-gradient(1100px 650px at 50% 0%,
+      rgba(255,255,255,0.18),
+      rgba(255,255,255,0.00) 60%),
+    linear-gradient(135deg,
+      rgba(255,255,255,0.12),
+      rgba(255,255,255,0.00) 45%);
+
+  mix-blend-mode: soft-light;
+  opacity: 0.55;
+}
+
+/* ==================================================
+   5) FALLBACK (if backdrop-filter unsupported)
+================================================== */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass { background: rgba(255,255,255,0.06); }
+  .glass::before, .glass::after { mix-blend-mode: normal; opacity: 0.35; }
+}
