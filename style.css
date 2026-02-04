@@ -1,110 +1,82 @@
-/* --------------------------
-   1) Global reset
-   -------------------------- */
-
-/* Removes default browser spacing and makes sizing predictable */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-/* Prevents sideways scroll and ensures full-width layout */
-html, body {
-  width: 100%;
-  overflow-x: hidden;
-}
-
-
-/* --------------------------
-   2) Scrolling background
-   -------------------------- */
-
-/* Wrapper just stacks the panels vertically */
-.gradient-wrapper {
-  width: 100%;
-}
-
-/*
-  One background "panel".
-  - 100vw = full screen width
-  - 100vh = full screen height
-*/
-.gradient {
-  width: 100vw;
-  height: 100vh;
-
-  /* Uses your image file (must be named gradient.jpg) */
-  background-image: url("gradient.jpg");
-
-  /* Scales the image to fully cover the panel */
-  background-size: cover;
-
-  /* Centers the image */
-  background-position: center;
-
-  /* No tiling within a single panel */
-  background-repeat: no-repeat;
-}
-
-/*
-  Mirrored panel:
-  scaleY(-1) flips the entire block vertically.
-  This creates a reflection seam at each boundary.
-*/
-.gradient.mirror {
-  transform: scaleY(-1);
-}
-
-
-/* --------------------------
-   3) Fixed frosted glass overlay
-   -------------------------- */
-
-/*
-  The glass overlay:
-  - fixed = doesn't scroll
-  - inset: 0 = covers whole screen
-  - pointer-events: none = you can still click/scroll normally
-*/
+/* =========================
+   Fixed frosted glass overlay
+   ========================= */
 .glass {
   position: fixed;
   inset: 0;
-  pointer-events: none;
   z-index: 10;
+  pointer-events: none;
+
+  /* The frosted part (blurs what’s behind) */
+  backdrop-filter: blur(20px) saturate(160%) contrast(105%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%) contrast(105%);
 
   /*
-    This blurs and saturates whatever is BEHIND the glass.
-    Works best in Chrome, Safari, Edge.
+    IMPORTANT:
+    Give the glass a *base* translucent fill.
+    Without this, it can read like “just a tint” or be too subtle.
   */
-  backdrop-filter: blur(18px) saturate(135%);
-  -webkit-backdrop-filter: blur(18px) saturate(135%);
+  background: rgba(255, 255, 255, 0.04);
+
+  /* Adds depth (like a glass pane catching light) */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.10);
+}
+
+/* The “glass lines” layer */
+.glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
 
   /*
-    Multiple "background layers" to simulate real glass:
-
-    Layer A: repeating horizontal lines (main glass lines)
-    Layer B: gentle haze gradient (adds depth)
+    Horizontal striations:
+    - 1px bright line
+    - 8px gap (adjust to taste)
   */
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.16) 0px,
+    rgba(255, 255, 255, 0.16) 3px,
+    rgba(255, 255, 255, 0.00) 8px
+  );
+
+  /*
+    Blend it into the blurred background
+    (this helps avoid “just a white overlay”)
+  */
+  mix-blend-mode: overlay;
+  opacity: 0.55;
+}
+
+/* Subtle highlights + “sparkle/noise” to feel more like real glass */
+.glass::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+
   background:
-    /* Layer A: thin repeating horizontal lines */
-    repeating-linear-gradient(
-      to bottom,
-      rgba(255, 255, 255, 0.10) 0px,  /* bright line start */
-      rgba(255, 255, 255, 0.10) 1px,  /* bright line thickness */
-      rgba(255, 255, 255, 0.00) 6px,  /* fade out */
-      rgba(255, 255, 255, 0.00) 12px  /* space between lines */
-    ),
-
-    /* Layer B: soft top-to-bottom haze */
+    /* Soft diagonal sheen */
     linear-gradient(
-      to bottom,
-      rgba(255, 255, 255, 0.08),
-      rgba(255, 255, 255, 0.02) 50%,
-      rgba(255, 255, 255, 0.06)
+      135deg,
+      rgba(255,255,255,0.18),
+      rgba(255,255,255,0.00) 45%
+    ),
+    /* Gentle top haze */
+    radial-gradient(
+      1200px 600px at 50% 0%,
+      rgba(255,255,255,0.14),
+      rgba(255,255,255,0.00) 60%
+    ),
+    /* Tiny fake “grain” without images */
+    repeating-radial-gradient(
+      circle at 20% 30%,
+      rgba(255,255,255,0.05) 0px,
+      rgba(255,255,255,0.00) 1px,
+      rgba(255,255,255,0.00) 3px
     );
 
-  /*
-    Optional: makes the highlights pop more.
-    If it looks too intense, change to:
-    - mix-blend-m
+  mix-blend-mode: soft-light;
+  opacity: 0.55;
+}
