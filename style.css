@@ -1,9 +1,16 @@
 /* =========================
    0) Reset + full-screen stage
 ========================= */
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-html, body { width: 100%; height: 100%; }
+html, body {
+  width: 100%;
+  height: 100%;
+}
 
 body {
   background: #000;
@@ -11,6 +18,9 @@ body {
   overflow: hidden;
 }
 
+/* =========================
+   Stage (full screen)
+========================= */
 .stage {
   width: 100%;
   height: 100%;
@@ -27,23 +37,24 @@ body {
 
   isolation: isolate;
 
+  /* Updated by JS */
   --x: 0;
   --y: 0;
 }
 
 /* =========================
-   1) Figure wrapper
+   Figure container
 ========================= */
 .figure {
   position: relative;
   width: min(70vw, 820px);
   height: min(70vh, 520px);
   border-radius: 3vw;
-  overflow: hidden;            /* IMPORTANT: contain blur + blends */
+  overflow: hidden;
 }
 
 /* =========================
-   2) SOURCE gradient (fills the whole figure)
+   COLOR SOURCE (behind glass)
 ========================= */
 .source {
   position: absolute;
@@ -58,33 +69,44 @@ body {
     #ffe36e
   );
 
-  transform: rotate(var(--gradientRotation, 12deg)) scale(1.2);
+  transform:
+    rotate(var(--gradientRotation, 12deg))
+    scale(1.2);
+
   transform-origin: center;
 
   mix-blend-mode: hard-light;
 }
 
 /* =========================
-   3) GLASS overlay
+   FROSTED GLASS (horizontal lines)
 ========================= */
 .glass {
   position: absolute;
-  inset: -40%;                 /* bigger than container so rotation doesn't clip */
+
+  /* Make it larger than container so rotation never clips */
+  inset: -40%;
 
   transform:
     translateX(calc(var(--x, 0) * 5%))
     translateY(calc(var(--y, 0) * 5%))
     rotate(var(--glassRotation, -16deg));
 
-  background-image: repeating-linear-gradient(to bottom,
-  rgba(255,255,255,0.04) 0%,
-  rgba(0,0,0,0.39) 49%,
-  rgba(255,255,255,0.27) 100%
-);
-background-size: 100% var(--glassSectionWidth, 24px);
+  /* HORIZONTAL stripe pattern */
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.05) 0%,
+    rgba(0,0,0,0.38) 48%,
+    rgba(255,255,255,0.28) 100%
+  );
 
+  background-size:
+    100% var(--glassSectionWidth, 24px);
+
+  /* Key refractive glow */
   mix-blend-mode: color-dodge;
 
+  /* Frost blur */
   backdrop-filter: blur(var(--blur, 20px));
   -webkit-backdrop-filter: blur(var(--blur, 20px));
 
