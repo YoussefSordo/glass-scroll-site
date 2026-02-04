@@ -1,82 +1,93 @@
-/* ========== 0) RESET / BASE ========== */
+/* =========================
+   0) Reset / base
+========================= */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 html, body {
   width: 100%;
   min-height: 100%;
   overflow-x: hidden;
-  background: #000; /* prevents white flash if image fails */
+
+  /* FYI uses a near-black base; helps blend modes behave */
+  background: #000113;
 }
 
-/* CRITICAL: ensures blend modes behave like the demo */
+/* CRITICAL: makes mix-blend-mode behave consistently */
 body { isolation: isolate; }
 
-/* ========== 1) SCROLLING BACKGROUND ========== */
+/* =========================
+   1) Scrolling background
+========================= */
 .bg { width: 100%; }
 
 .panel {
   width: 100vw;
   height: 100vh;
-  background-image: url("./gradient.jpg?v=4");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  background: url("./gradient.jpg?v=5") center / cover no-repeat;
 }
 
 .panel.mirror { transform: scaleY(-1); }
 
-/* ========== 2) GLASS OVERLAY (fixed) ========== */
+/* =========================
+   2) Fixed glass container
+========================= */
 .glass {
   position: fixed;
   inset: 0;
   z-index: 10;
   pointer-events: none;
 
-  /* Frost base */
-  backdrop-filter: blur(22px) saturate(175%) contrast(120%);
-  -webkit-backdrop-filter: blur(22px) saturate(175%) contrast(120%);
-
-  /* Keep base VERY low so it doesn't wash to white */
-  background: rgba(255,255,255,0.015);
-
-  /* Subtle pane depth so it reads on black too */
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.14),
-    inset 0 -1px 0 rgba(0,0,0,0.22);
+  /* Keep the base nearly invisible — the frost layer does the work */
+  background: rgba(255,255,255,0.01);
 }
 
-/* ========== 3) FYI-STYLE “FROST STRIPES” (FINAL LOOK) ========== */
-.glass::before {
-  content: "";
+/* =========================
+   3) FYI-like “frost layer”
+   (this is the main effect)
+========================= */
+.frost {
   position: absolute;
   inset: 0;
 
   /*
-    This is the key: stripes with BOTH dark + light bands.
-    That dark core is what keeps structure visible over black.
+    This is essentially FYI’s --frost-gradient:
+    repeating-linear-gradient with light + dark + light band. :contentReference[oaicite:1]{index=1}
   */
-  background: repeating-linear-gradient(
-    to bottom,
-    rgba(255,255,255,0.05) 0%,
-    rgba(255,255,255,0.05) 18%,
-    rgba(0,0,0,0.42) 49%,
-    rgba(255,255,255,0.22) 82%,
-    rgba(255,255,255,0.05) 100%
+  background-image: repeating-linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0.04) 0%,
+    rgba(0,   0,   0,   0.39) 49%,
+    rgba(255, 255, 255, 0.27) 100%
   );
 
-  /* Band width (bigger = wider “waves”) */
-  background-size: 100% 26px;
+  /*
+    FYI controls “stripe width” by background-size (they call it glassSectionWidth). :contentReference[oaicite:2]{index=2}
+    Bigger = wider bands. Start here.
+  */
+  background-size: 28px 100%;
 
-  /* THIS is the final trick from the FYI end result */
+  /*
+    You want HORIZONTAL lines:
+    FYI’s gradient runs left→right (vertical bands),
+    so we rotate 90° to make them horizontal.
+  */
+  transform: rotate(90deg) scale(2);
+
+  /*
+    The final FYI look relies on color-dodge blending + blur on this same layer. :contentReference[oaicite:3]{index=3}
+  */
   mix-blend-mode: color-dodge;
 
-  /* Keep strong but not nuclear */
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+
   opacity: 0.95;
 }
 
-/* ========== 4) EXTRA SHEEN (helps it feel like a real pane) ========== */
-.glass::after {
-  content: "";
+/* =========================
+   4) Subtle highlight sheen
+========================= */
+.sheen {
   position: absolute;
   inset: 0;
 
@@ -92,8 +103,14 @@ body { isolation: isolate; }
   opacity: 0.55;
 }
 
-/* ========== 5) FALLBACK ========== */
+/* =========================
+   5) Fallback (no backdrop-filter)
+========================= */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .glass { background: rgba(255,255,255,0.06); }
-  .glass::before, .glass::after { mix-blend-mode: normal; opacity: 0.35; }
+  .frost {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    mix-blend-mode: normal;
+    opacity: 0.35;
+  }
 }
