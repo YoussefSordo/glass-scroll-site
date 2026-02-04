@@ -76,13 +76,12 @@ body {
     translateY(calc(var(--y, 0) * 5%))
     rotate(var(--glassRotation, -16deg));
 
-  background-image: repeating-linear-gradient(
-    to right,
-    rgba(255,255,255,0.04) 0%,
-    rgba(0,0,0,0.39) 49%,
-    rgba(255,255,255,0.27) 100%
-  );
-  background-size: var(--glassSectionWidth, 24px) 100%;
+  background-image: repeating-linear-gradient(to bottom,
+  rgba(255,255,255,0.04) 0%,
+  rgba(0,0,0,0.39) 49%,
+  rgba(255,255,255,0.27) 100%
+);
+background-size: 100% var(--glassSectionWidth, 24px);
 
   mix-blend-mode: color-dodge;
 
