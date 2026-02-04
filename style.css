@@ -1,83 +1,110 @@
-/* =========================
-   Fixed frosted glass overlay
-   ========================= */
+/* -----------------------------
+   0) Reset + page setup
+------------------------------ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%;
+  min-height: 100%;
+  overflow-x: hidden;          /* stop sideways scroll */
+  background: #000;            /* IMPORTANT: prevents “white screen” if image fails */
+}
+
+/* -----------------------------
+   1) Scrolling background panels
+------------------------------ */
+
+/* Wrapper that stacks panels vertically */
+.bg { width: 100%; }
+
+/* One full-screen panel */
+.panel {
+  width: 100vw;
+  height: 100vh;
+
+  /* Your image (MUST be exactly named gradient.jpg and in same folder) */
+  background-image: url("./gradient.jpg?v=1");
+
+  background-size: cover;      /* fill the viewport */
+  background-position: center; /* keep centered */
+  background-repeat: no-repeat;
+}
+
+/* Flip every other panel vertically to create “mirror seam” continuity */
+.panel.mirror { transform: scaleY(-1); }
+
+/* -----------------------------
+   2) Fixed frosted glass overlay
+   (inspired by the Frontend FYI technique:
+   multiple gradients + blur + blend) :contentReference[oaicite:1]{index=1}
+------------------------------ */
+
 .glass {
   position: fixed;
   inset: 0;
   z-index: 10;
   pointer-events: none;
 
-  /* The frosted part (blurs what’s behind) */
-  backdrop-filter: blur(20px) saturate(160%) contrast(105%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%) contrast(105%);
+  /* Frost blur: this is what makes it “glass” */
+  backdrop-filter: blur(18px) saturate(160%) contrast(105%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%) contrast(105%);
 
-  /*
-    IMPORTANT:
-    Give the glass a *base* translucent fill.
-    Without this, it can read like “just a tint” or be too subtle.
-  */
-  background: rgba(255, 255, 255, 0.04);
-
-  /* Adds depth (like a glass pane catching light) */
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.18),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.10);
+  /* A very light base tint (KEEP THIS LOW to avoid white screen) */
+  background: rgba(255,255,255,0.03);
 }
 
-/* The “glass lines” layer */
+/* Glass “lines” / striations layer */
 .glass::before {
   content: "";
   position: absolute;
   inset: 0;
 
-  /*
-    Horizontal striations:
-    - 1px bright line
-    - 8px gap (adjust to taste)
+  /* Horizontal lines:
+     - 0→2px is the bright line thickness
+     - 12px is the repeat spacing (bigger = more space between lines)
   */
   background: repeating-linear-gradient(
     to bottom,
-    rgba(255, 255, 255, 0.16) 0px,
-    rgba(255, 255, 255, 0.16) 1px,
-    rgba(255, 255, 255, 0.00) 8px
+    rgba(255,255,255,0.14) 0px,
+    rgba(255,255,255,0.14) 2px,
+    rgba(255,255,255,0.00) 12px
   );
 
-  /*
-    Blend it into the blurred background
-    (this helps avoid “just a white overlay”)
-  */
-  mix-blend-mode: overlay;
   opacity: 0.55;
+
+  /* Blend adds “light catching” without nuking to white */
+  mix-blend-mode: overlay;
 }
 
-/* Subtle highlights + “sparkle/noise” to feel more like real glass */
+/* Highlight + depth layer (makes it feel less “flat”) */
 .glass::after {
   content: "";
   position: absolute;
   inset: 0;
 
+  /* Two soft highlights */
   background:
-    /* Soft diagonal sheen */
-    linear-gradient(
-      135deg,
+    radial-gradient(900px 500px at 50% 0%,
       rgba(255,255,255,0.18),
-      rgba(255,255,255,0.00) 45%
-    ),
-    /* Gentle top haze */
-    radial-gradient(
-      1200px 600px at 50% 0%,
-      rgba(255,255,255,0.14),
-      rgba(255,255,255,0.00) 60%
-    ),
-    /* Tiny fake “grain” without images */
-    repeating-radial-gradient(
-      circle at 20% 30%,
-      rgba(255,255,255,0.05) 0px,
-      rgba(255,255,255,0.00) 1px,
-      rgba(255,255,255,0.00) 3px
-    );
+      rgba(255,255,255,0.00) 60%),
+    linear-gradient(135deg,
+      rgba(255,255,255,0.12),
+      rgba(255,255,255,0.00) 45%);
 
+  opacity: 0.45;
   mix-blend-mode: soft-light;
-  opacity: 0.55;
 }
 
+/* -----------------------------
+   3) Fallback: if backdrop-filter unsupported
+   Don’t go white; just keep it subtle.
+------------------------------ */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass {
+    background: rgba(255,255,255,0.06);
+  }
+  .glass::before, .glass::after {
+    opacity: 0.25;
+    mix-blend-mode: normal;
+  }
+}
