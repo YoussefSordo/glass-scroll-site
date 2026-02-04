@@ -3,15 +3,30 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Scroll Gradient + Fixed Glass</title>
-  <link rel="stylesheet" href="./style.css?v=1" />
+  <title>FYI Glass + Long Scroll</title>
+  <link rel="stylesheet" href="./style.css?v=6" />
 </head>
 
 <body>
-  <!-- Long scrolling background (1:10 = 10x viewport height) -->
-  <main class="scroll-bg"></main>
+  <!-- Long scrolling background (this is what you scroll through) -->
+  <main class="scroll-bg" aria-hidden="true"></main>
 
-  <!-- Fixed glass overlay (stays on screen) -->
-  <div class="glass" aria-hidden="true"></div>
+  <!-- FYI “stage” stays centered like the demo -->
+  <div class="stage">
+    <div class="figure"
+      style="
+        --glassSectionHeight: 24px; /* stripe thickness */
+        --blur: 20px;              /* blur strength */
+        --glassRotation: -16deg;   /* demo tilt */
+        --gradientRotation: 12deg; /* source tilt */
+      "
+    >
+      <!-- Bright color source (critical for FYI look) -->
+      <div class="source"></div>
+
+      <!-- Glass overlay (fixed look, no pointer movement) -->
+      <div class="glass" aria-hidden="true"></div>
+    </div>
+  </div>
 </body>
 </html>
