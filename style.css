@@ -1,27 +1,110 @@
+/* --------------------------
+   1) Global reset
+   -------------------------- */
+
+/* Removes default browser spacing and makes sizing predictable */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+/* Prevents sideways scroll and ensures full-width layout */
 html, body {
   width: 100%;
   overflow-x: hidden;
 }
 
+
+/* --------------------------
+   2) Scrolling background
+   -------------------------- */
+
+/* Wrapper just stacks the panels vertically */
 .gradient-wrapper {
   width: 100%;
 }
 
+/*
+  One background "panel".
+  - 100vw = full screen width
+  - 100vh = full screen height
+*/
 .gradient {
   width: 100vw;
   height: 100vh;
+
+  /* Uses your image file (must be named gradient.jpg) */
   background-image: url("gradient.jpg");
+
+  /* Scales the image to fully cover the panel */
   background-size: cover;
+
+  /* Centers the image */
   background-position: center;
+
+  /* No tiling within a single panel */
   background-repeat: no-repeat;
 }
 
+/*
+  Mirrored panel:
+  scaleY(-1) flips the entire block vertically.
+  This creates a reflection seam at each boundary.
+*/
 .gradient.mirror {
   transform: scaleY(-1);
 }
+
+
+/* --------------------------
+   3) Fixed frosted glass overlay
+   -------------------------- */
+
+/*
+  The glass overlay:
+  - fixed = doesn't scroll
+  - inset: 0 = covers whole screen
+  - pointer-events: none = you can still click/scroll normally
+*/
+.glass {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+
+  /*
+    This blurs and saturates whatever is BEHIND the glass.
+    Works best in Chrome, Safari, Edge.
+  */
+  backdrop-filter: blur(18px) saturate(135%);
+  -webkit-backdrop-filter: blur(18px) saturate(135%);
+
+  /*
+    Multiple "background layers" to simulate real glass:
+
+    Layer A: repeating horizontal lines (main glass lines)
+    Layer B: gentle haze gradient (adds depth)
+  */
+  background:
+    /* Layer A: thin repeating horizontal lines */
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.10) 0px,  /* bright line start */
+      rgba(255, 255, 255, 0.10) 1px,  /* bright line thickness */
+      rgba(255, 255, 255, 0.00) 6px,  /* fade out */
+      rgba(255, 255, 255, 0.00) 12px  /* space between lines */
+    ),
+
+    /* Layer B: soft top-to-bottom haze */
+    linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.08),
+      rgba(255, 255, 255, 0.02) 50%,
+      rgba(255, 255, 255, 0.06)
+    );
+
+  /*
+    Optional: makes the highlights pop more.
+    If it looks too intense, change to:
+    - mix-blend-m
