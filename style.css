@@ -1,97 +1,80 @@
 /* =========================
-   0) Reset + full-screen stage
+   0) Reset / base
 ========================= */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 html, body {
   width: 100%;
-  height: 100%;
-}
-
-body {
-  background: #000;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  overflow: hidden; /* FYI demo is a fixed stage */
-}
-
-/* Full-screen container */
-.stage {
-  width: 100%;
-  height: 100%;
-  display: grid;
-  place-items: center;
-
-  /* Subtle vignette like the demo */
-  background:
-    radial-gradient(circle at center,
-      rgba(0,0,0,0) 0%,
-      rgba(0,0,0,0.85) 70%,
-      rgba(0,0,0,1) 100%
-    ),
-    #000;
-
-  /* Important for predictable blend-mode results */
-  isolation: isolate;
-
-  /* These get updated by JS in index.html */
-  --x: 0;
-  --y: 0;
+  min-height: 100%;
+  overflow-x: hidden;
+  background: #000; /* prevents white flash */
 }
 
 /* =========================
-   1) Figure wrapper (centered)
+   1) Long scrolling gradient background
+   1:10 ratio = 10x the viewport height
+   Works on desktop + mobile
 ========================= */
-.figure {
-  position: relative;
-  width: min(70vw, 820px);
-  height: min(70vh, 520px);
-  display: grid;
-  place-items: center;
+.scroll-bg {
+  width: 100vw;
+  min-height: 1000vh; /* <-- 10x viewport height */
 
-  /* Tunable “demo variables” (can also be set inline in HTML) */
-  --glassSectionWidth: 24px;  /* stripe thickness */
-  --blur: 20px;               /* blur strength */
-  --gradientRotation: 12deg;  /* angle of the source gradient */
-}
-
-/* =========================
-   2) Color SOURCE (behind the glass)
-========================= */
-.source {
-  width: 50%;
-  height: 50%;
-  border-radius: 3vw;
-
-  /* Bright source gradient = why the glass “pops” */
-  background-image: linear-gradient(
-    135deg,
-    #b59cf8,
-    #7af0ff 35%,
-    #ff7ad9 70%,
-    #ffe36e
+  /*
+    Big, colorful vertical gradient that stays interesting while scrolling.
+    Using multiple stops so it doesn’t “finish” too quickly on tall pages.
+  */
+  background: linear-gradient(
+    to bottom,
+    #05070f 0%,
+    #2a1a6a 10%,
+    #00c2ff 22%,
+    #ff4fd8 36%,
+    #ffd35c 50%,
+    #29ffb0 64%,
+    #6a5cff 78%,
+    #0b1020 100%
   );
 
-  transform: rotate(var(--gradientRotation));
-  mix-blend-mode: hard-light;
+  /* Ensure it fills the width cleanly */
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
 }
 
 /* =========================
-   3) Frosted GLASS overlay (HORIZONTAL LINES)
+   2) Fixed glass overlay (lines fixed)
+   No cursor movement, no JS
 ========================= */
 .glass {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+
+  /* Frosted effect */
+  backdrop-filter: blur(22px) saturate(175%) contrast(120%);
+  -webkit-backdrop-filter: blur(22px) saturate(175%) contrast(120%);
+
+  /* Very light base tint so it never washes white */
+  background: rgba(255,255,255,0.012);
+
+  /* Helps it read even over dark areas */
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.14),
+    inset 0 -1px 0 rgba(0,0,0,0.22);
+
+  /* Tuning knob (stripe thickness) */
+  --glassSectionHeight: 24px;
+}
+
+/* Horizontal “frost lines” (fixed pattern) */
+.glass::before {
+  content: "";
   position: absolute;
   inset: 0;
 
-  /* Subtle pointer parallax + scale like the demo */
-  transform:
-    translateX(calc(var(--x, 0) * 5%))
-    translateY(calc(var(--y, 0) * 5%))
-    scale(2);
-
   /*
-    Horizontal stripes:
-    repeating-linear-gradient to bottom creates HORIZONTAL banding
-    (light → dark core → bright edge) like FYI
+    FYI-style frost band: light -> dark core -> bright edge
+    Direction "to bottom" = horizontal lines
   */
   background-image: repeating-linear-gradient(
     to bottom,
@@ -100,13 +83,37 @@ body {
     rgba(255,255,255,0.27) 100%
   );
 
-  /* Stripe height controlled here */
-  background-size: 100% var(--glassSectionWidth);
+  /* stripe thickness controlled here */
+  background-size: 100% var(--glassSectionHeight);
 
-  /* Key to the final glowing effect */
+  /* Glow/pop like the FYI final look */
   mix-blend-mode: color-dodge;
 
-  /* Frost blur */
-  backdrop-filter: blur(var(--blur));
-  -webkit-backdrop-filter: blur(var(--blur));
+  opacity: 0.95;
+}
+
+/* Subtle sheen highlight (fixed) */
+.glass::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background:
+    radial-gradient(1200px 700px at 50% 0%,
+      rgba(255,255,255,0.16),
+      rgba(255,255,255,0.00) 60%),
+    linear-gradient(135deg,
+      rgba(255,255,255,0.10),
+      rgba(255,255,255,0.00) 45%);
+
+  mix-blend-mode: soft-light;
+  opacity: 0.55;
+}
+
+/* =========================
+   3) Fallback if blur unsupported
+========================= */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass { background: rgba(255,255,255,0.06); }
+  .glass::before, .glass::after { mix-blend-mode: normal; opacity: 0.35; }
 }
