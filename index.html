@@ -1,21 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <!-- Basic metadata -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Glass Scroll</title>
-
-  <!-- Main stylesheet (must be in same folder) -->
-  <link rel="stylesheet" href="./style.css?v=2" />
+  <link rel="stylesheet" href="./style.css?v=3" />
 </head>
 
 <body>
-
-  <!--
-    SCROLLING BACKGROUND
-    Five full-height panels using gradient.jpg
-  -->
   <main class="bg">
     <section class="panel normal"></section>
     <section class="panel mirror"></section>
@@ -24,11 +16,7 @@
     <section class="panel normal"></section>
   </main>
 
-  <!--
-    FIXED GLASS OVERLAY
-    This stays fixed while background scrolls
-  -->
-  <div class="glass"></div>
-
+  <!-- Fixed frosted glass overlay -->
+  <div class="glass" aria-hidden="true"></div>
 </body>
 </html>
