@@ -1,25 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <!-- Character encoding -->
-  <meta charset="UTF-8" />
-
-  <!-- Makes it scale correctly on phones -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <title>Gradient + Fixed Glass Overlay</title>
-
-  <!-- Connects this HTML file to style.css (must be in the same folder) -->
-  <link rel="stylesheet" href="style.css" />
-</head>
-
 <body>
-  <!--
-    This wrapper contains the scrolling background.
-    Everything inside here scrolls naturally.
-  -->
   <div class="gradient-wrapper">
-    <!-- Each block is one full screen height (100vh) -->
     <div class="gradient normal"></div>
     <div class="gradient mirror"></div>
     <div class="gradient normal"></div>
@@ -27,10 +7,6 @@
     <div class="gradient normal"></div>
   </div>
 
-  <!--
-    This is the fixed "glass sheet".
-    It stays stuck to the screen while the background scrolls underneath.
-  -->
-  <div class="glass"></div>
+  <!-- Fixed glass sheet (stays on screen) -->
+  <div class="glass" aria-hidden="true"></div>
 </body>
-</html>
