@@ -1,6 +1,4 @@
-/* =========================
-   0) Reset / base
-========================= */
+/* ========== RESET ========== */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 html, body {
@@ -11,15 +9,10 @@ html, body {
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
-/* =========================
-   1) Long scrolling background (1:10)
-   This sits BEHIND the demo stage
-========================= */
+/* ========== SCROLL BACKGROUND (1:10) ========== */
 .scroll-bg {
   width: 100vw;
   min-height: 1000vh; /* 10x viewport height */
-
-  /* your long background gradient */
   background: linear-gradient(
     to bottom,
     #05070f 0%,
@@ -31,20 +24,17 @@ html, body {
     #6a5cff 78%,
     #0b1020 100%
   );
-
   background-repeat: no-repeat;
   background-size: 100% 100%;
 }
 
-/* =========================
-   2) FYI stage (centered overlay)
-   IMPORTANT: blend-mode stability
-========================= */
+/* ========== FIXED FYI STAGE ========== */
 .stage {
   position: fixed;
   inset: 0;
   display: grid;
   place-items: center;
+  pointer-events: none;
 
   /* vignette like FYI */
   background:
@@ -54,13 +44,11 @@ html, body {
       rgba(0,0,0,1) 100%
     );
 
+  /* IMPORTANT for blend-mode correctness */
   isolation: isolate;
-  pointer-events: none; /* doesn’t block scrolling */
 }
 
-/* =========================
-   3) Figure wrapper (same proportions as before)
-========================= */
+/* ========== FIGURE WRAPPER ========== */
 .figure {
   position: relative;
   width: min(70vw, 820px);
@@ -68,16 +56,13 @@ html, body {
   display: grid;
   place-items: center;
 
-  --glassSectionHeight: 24px;
-  --blur: 20px;
-  --glassRotation: -16deg;
-  --gradientRotation: 12deg;
+  --glassSectionHeight: 24px; /* line spacing */
+  --blur: 20px;               /* blur strength */
+  --glassRotation: -16deg;    /* FYI tilt */
+  --gradientRotation: 12deg;  /* source tilt */
 }
 
-/* =========================
-   4) Bright source (critical!)
-   This is what makes dodge “pop”
-========================= */
+/* ========== COLOR SOURCE (CRITICAL) ========== */
 .source {
   width: 50%;
   height: 50%;
@@ -95,38 +80,16 @@ html, body {
   mix-blend-mode: hard-light;
 }
 
-/* =========================
-   5) Glass overlay (HORIZONTAL lines, fixed)
-   Exact FYI frost gradient logic, just horizontal
-========================= */
+/* ========== GLASS OVERLAY (HORIZONTAL + FIXED) ========== */
 .glass {
   position: absolute;
   inset: 0;
 
-  /* fixed look: no cursor-driven translate */
+  /* FIXED: no cursor movement, only scale + tilt like FYI */
   transform: scale(2) rotate(var(--glassRotation));
 
+  /* HORIZONTAL LINES */
   background-image: repeating-linear-gradient(
-    to bottom, /* horizontal lines */
+    to bottom,
     rgba(255,255,255,0.04) 0%,
-    rgba(0,0,0,0.39) 49%,
-    rgba(255,255,255,0.27) 100%
-  );
-
-  background-size: 100% var(--glassSectionHeight);
-
-  mix-blend-mode: color-dodge;
-
-  backdrop-filter: blur(var(--blur));
-  -webkit-backdrop-filter: blur(var(--blur));
-}
-
-/* =========================
-   6) Fallback if blur unsupported
-========================= */
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .glass {
-    mix-blend-mode: normal;
-    opacity: 0.35;
-  }
-}
+    rgba(0,0,0
