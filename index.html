@@ -3,30 +3,32 @@
 <head>
   <!-- Basic metadata -->
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Glass Scroll</title>
 
-  <!-- Load CSS (must be in same folder as index.html) -->
-  <link rel="stylesheet" href="./style.css?v=1" />
+  <!-- Main stylesheet (must be in same folder) -->
+  <link rel="stylesheet" href="./style.css?v=2" />
 </head>
 
 <body>
+
   <!--
     SCROLLING BACKGROUND
-    This creates 5 full-screen panels that scroll.
+    Five full-height panels using gradient.jpg
   -->
   <main class="bg">
-    <section class="panel normal" aria-hidden="true"></section>
-    <section class="panel mirror" aria-hidden="true"></section>
-    <section class="panel normal" aria-hidden="true"></section>
-    <section class="panel mirror" aria-hidden="true"></section>
-    <section class="panel normal" aria-hidden="true"></section>
+    <section class="panel normal"></section>
+    <section class="panel mirror"></section>
+    <section class="panel normal"></section>
+    <section class="panel mirror"></section>
+    <section class="panel normal"></section>
   </main>
 
   <!--
     FIXED GLASS OVERLAY
-    This stays pinned to the viewport while the background scrolls under it.
+    This stays fixed while background scrolls
   -->
-  <div class="glass" aria-hidden="true"></div>
+  <div class="glass"></div>
+
 </body>
 </html>
