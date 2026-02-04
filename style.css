@@ -48,4 +48,65 @@ body {
   display: grid;
   place-items: center;
 
-  /* Tunable “demo variables” (can also be set inline in HTML) *
+  /* Tunable “demo variables” (can also be set inline in HTML) */
+  --glassSectionWidth: 24px;  /* stripe thickness */
+  --blur: 20px;               /* blur strength */
+  --gradientRotation: 12deg;  /* angle of the source gradient */
+}
+
+/* =========================
+   2) Color SOURCE (behind the glass)
+========================= */
+.source {
+  width: 50%;
+  height: 50%;
+  border-radius: 3vw;
+
+  /* Bright source gradient = why the glass “pops” */
+  background-image: linear-gradient(
+    135deg,
+    #b59cf8,
+    #7af0ff 35%,
+    #ff7ad9 70%,
+    #ffe36e
+  );
+
+  transform: rotate(var(--gradientRotation));
+  mix-blend-mode: hard-light;
+}
+
+/* =========================
+   3) Frosted GLASS overlay (HORIZONTAL LINES)
+========================= */
+.glass {
+  position: absolute;
+  inset: 0;
+
+  /* Subtle pointer parallax + scale like the demo */
+  transform:
+    translateX(calc(var(--x, 0) * 5%))
+    translateY(calc(var(--y, 0) * 5%))
+    scale(2);
+
+  /*
+    Horizontal stripes:
+    repeating-linear-gradient to bottom creates HORIZONTAL banding
+    (light → dark core → bright edge) like FYI
+  */
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.04) 0%,
+    rgba(0,0,0,0.39) 49%,
+    rgba(255,255,255,0.27) 100%
+  );
+
+  /* Stripe height controlled here */
+  background-size: 100% var(--glassSectionWidth);
+
+  /* Key to the final glowing effect */
+  mix-blend-mode: color-dodge;
+
+  /* Frost blur */
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+}
