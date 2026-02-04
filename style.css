@@ -38,7 +38,7 @@
   background: repeating-linear-gradient(
     to bottom,
     rgba(255, 255, 255, 0.16) 0px,
-    rgba(255, 255, 255, 0.16) 3px,
+    rgba(255, 255, 255, 0.16) 1px,
     rgba(255, 255, 255, 0.00) 8px
   );
 
@@ -80,3 +80,4 @@
   mix-blend-mode: soft-light;
   opacity: 0.55;
 }
+
