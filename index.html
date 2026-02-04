@@ -2,12 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>Glass Scroll</title>
-  <link rel="stylesheet" href="./style.css?v=4" />
+  <link rel="stylesheet" href="./style.css?v=5" />
 </head>
 
 <body>
+  <!-- scrolling background -->
   <main class="bg">
     <section class="panel normal"></section>
     <section class="panel mirror"></section>
@@ -16,6 +17,10 @@
     <section class="panel normal"></section>
   </main>
 
-  <div class="glass" aria-hidden="true"></div>
+  <!-- fixed glass -->
+  <div class="glass" aria-hidden="true">
+    <div class="frost"></div>
+    <div class="sheen"></div>
+  </div>
 </body>
 </html>
