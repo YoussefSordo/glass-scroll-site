@@ -9,10 +9,9 @@ html, body {
 }
 
 body {
-  /* black demo background */
   background: #000;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  overflow: hidden;
+  overflow: hidden; /* FYI demo is a fixed stage */
 }
 
 /* Full-screen container */
@@ -22,15 +21,19 @@ body {
   display: grid;
   place-items: center;
 
-  /* FYI-style: keep edges darker (simple "circular fadeout") */
+  /* Subtle vignette like the demo */
   background:
-    radial-gradient(circle at center, rgba(0,0,0,0) 0%, rgba(0,0,0,0.85) 70%, rgba(0,0,0,1) 100%),
+    radial-gradient(circle at center,
+      rgba(0,0,0,0) 0%,
+      rgba(0,0,0,0.85) 70%,
+      rgba(0,0,0,1) 100%
+    ),
     #000;
 
-  /* IMPORTANT: helps blend-modes behave consistently */
+  /* Important for predictable blend-mode results */
   isolation: isolate;
 
-  /* These are updated by JS on pointermove */
+  /* These get updated by JS in index.html */
   --x: 0;
   --y: 0;
 }
@@ -44,66 +47,5 @@ body {
   height: min(70vh, 520px);
   display: grid;
   place-items: center;
-}
 
-/* =========================
-   2) The colorful SOURCE gradient
-   (behind the glass)
-========================= */
-.source {
-  width: 50%;
-  height: 50%;
-  border-radius: 3vw;
-
-  /* "primary gradient" vibe (you can change these colors later) */
-  background-image: linear-gradient(
-    135deg,
-    #b59cf8,
-    #7af0ff 35%,
-    #ff7ad9 70%,
-    #ffe36e
-  );
-
-  /* Rotate like the FYI demo */
-  transform: rotate(var(--gradientRotation, 12deg));
-
-  /* FYI uses a blend mode on the source too */
-  mix-blend-mode: hard-light;
-}
-
-/* =========================
-   3) Frosted GLASS overlay
-   (the actual effect)
-========================= */
-.glass {
-  position: absolute;
-  inset: 0;
-
-  /* Slight pointer-based movement (scaled up to feel like a sheet) */
-  transform:
-    translateX(calc(var(--x, 0) * 5%))
-    translateY(calc(var(--y, 0) * 5%))
-    scale(2)
-    rotate(var(--glassRotation, -16deg));
-
-  /*
-    The “frost gradient” from the FYI tutorial:
-    repeating-linear-gradient with dark band in the middle.
-  */
-  background-image: repeating-linear-gradient(
-    to right,
-    rgba(255,255,255,0.04) 0%,
-    rgba(0,0,0,0.39) 49%,
-    rgba(255,255,255,0.27) 100%
-  );
-
-  /* Controls stripe thickness */
-  background-size: var(--glassSectionWidth, 20px) 100%;
-
-  /* This is the *key* to the glowing refraction look */
-  mix-blend-mode: color-dodge;
-
-  /* Frost blur */
-  backdrop-filter: blur(var(--blur, 20px));
-  -webkit-backdrop-filter: blur(var(--blur, 20px));
-}
+  /* Tunable “demo variables” (can also be set inline in HTML) *
