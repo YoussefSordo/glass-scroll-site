@@ -1,62 +1,1028 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Basic page metadata -->
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Frosted Glass (FYI-style)</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sordo Studio — Architecture</title>
+<meta name="description" content="Sordo Studio — Architecture portfolio." />
 
-  <!-- Link to stylesheet (same folder) -->
-  <link rel="stylesheet" href="./style.css?v=1" />
+<style>
+  :root {
+    --bg: #FAFAF8;
+    --ink: #141413;
+    --muted: #9A9A9A;
+    --rule: #E8E8E6;
+    --serif: Georgia, 'Times New Roman', 'Cormorant Garamond', serif;
+    --header-h: 88px;
+    --gutter: clamp(20px, 4vw, 56px);
+    --maxw: 1400px;
+    --expanded-margin: clamp(24px, 5vh, 64px);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  body.is-expanded { overflow: hidden; }
+
+  img, svg { display: block; max-width: 100%; height: auto; }
+  a { color: inherit; text-decoration: none; }
+  a:hover { color: var(--muted); }
+  button { font: inherit; }
+
+  /* HEADER */
+  .site-header {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(250, 250, 248, 0.92);
+    backdrop-filter: saturate(140%) blur(8px);
+    -webkit-backdrop-filter: saturate(140%) blur(8px);
+    border-bottom: 1px solid var(--rule);
+  }
+  .header-inner {
+    max-width: var(--maxw); margin: 0 auto;
+    height: var(--header-h); padding: 0 var(--gutter);
+    display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  }
+  .logo { display: inline-flex; align-items: center; line-height: 1; }
+  .logo svg { height: 44px; width: auto; }
+
+  .nav {
+    display: flex; gap: 36px;
+    font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.18em;
+  }
+  .nav a {
+    color: var(--ink); padding: 4px 0; position: relative;
+    transition: color 0.2s ease;
+  }
+  .nav a::after {
+    content: ""; position: absolute; left: 0; right: 100%; bottom: -2px;
+    height: 1px; background: var(--ink); transition: right 0.3s ease;
+  }
+  .nav a:hover::after { right: 0; }
+
+  .nav-toggle {
+    display: none; background: none; border: 0;
+    width: 40px; height: 40px; cursor: pointer; padding: 0;
+  }
+  .nav-toggle span {
+    display: block; width: 22px; height: 1px;
+    background: var(--ink); margin: 5px auto;
+  }
+
+  /* FEED */
+  .feed {
+    max-width: var(--maxw); margin: 0 auto;
+    padding: clamp(60px, 9vw, 120px) var(--gutter) clamp(80px, 12vw, 160px);
+    display: flex; flex-direction: column;
+    gap: clamp(80px, 10vw, 140px);
+    transform: scale(1); will-change: transform;
+  }
+
+  .project {
+    display: block; color: var(--ink); cursor: pointer;
+    transition: opacity 0.3s ease;
+    background: none; border: 0; padding: 0;
+    text-align: left; width: 100%; font: inherit;
+  }
+  .project:hover .project-image { opacity: 0.92; }
+  .project:hover .project-title { color: var(--muted); }
+
+  .project-image {
+    width: 100%; aspect-ratio: 16 / 10;
+    background: var(--rule); overflow: hidden;
+    transition: opacity 0.4s ease; position: relative;
+  }
+  .project--tall .project-image { aspect-ratio: 4 / 5; max-width: 760px; margin: 0 auto; }
+  .project--wide .project-image { aspect-ratio: 21 / 9; }
+
+  .placeholder {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    background:
+      linear-gradient(135deg, rgba(20,20,19,0.02) 0%, rgba(20,20,19,0.05) 100%),
+      var(--rule);
+    color: var(--muted);
+    font-size: 0.78rem; letter-spacing: 0.22em; text-transform: uppercase;
+  }
+
+  .project-meta {
+    display: flex; justify-content: space-between; align-items: baseline;
+    gap: 24px; margin-top: 24px; padding-top: 20px;
+    border-top: 1px solid var(--rule);
+  }
+  .project-title {
+    font-size: clamp(1.4rem, 2.4vw, 2rem);
+    font-weight: 400; margin: 0; line-height: 1.2;
+    transition: color 0.3s ease;
+  }
+  .project-info {
+    font-size: 0.85rem; color: var(--muted);
+    letter-spacing: 0.08em; text-align: right; flex-shrink: 0;
+  }
+  .project-info span + span::before { content: " — "; margin: 0 4px; }
+
+  /* FOOTER */
+  .site-footer {
+    border-top: 1px solid var(--rule);
+    padding: clamp(40px, 6vw, 64px) var(--gutter);
+  }
+  .footer-inner {
+    max-width: var(--maxw); margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 24px; font-size: 0.8rem; color: var(--muted); letter-spacing: 0.06em;
+  }
+  .footer-inner a { color: var(--muted); }
+  .footer-inner a:hover { color: var(--ink); }
+
+  /* OVERLAY */
+  .overlay-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(20, 20, 19, 0.55);
+    z-index: 90; opacity: 0; pointer-events: none;
+    transition: opacity 0.35s ease;
+  }
+  .overlay-backdrop.is-open { opacity: 1; pointer-events: auto; }
+
+  .overlay {
+    position: fixed;
+    top: var(--expanded-margin);
+    left: var(--expanded-margin);
+    right: var(--expanded-margin);
+    bottom: var(--expanded-margin);
+    background: var(--bg);
+    z-index: 100;
+    opacity: 0; transform: scale(0.96);
+    pointer-events: none;
+    transition: opacity 0.35s ease, transform 0.45s cubic-bezier(.2,.7,.2,1);
+    overflow: hidden;
+    box-shadow: 0 30px 80px -20px rgba(20,20,19,0.35);
+  }
+  .overlay.is-open { opacity: 1; transform: scale(1); pointer-events: auto; }
+
+  .overlay-close {
+    position: absolute; top: 16px; right: 16px;
+    z-index: 110; width: 44px; height: 44px;
+    border-radius: 50%; border: 1px solid var(--rule);
+    background: rgba(250, 250, 248, 0.92);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ink);
+    transition: background 0.2s ease, transform 0.2s ease, color 0.2s ease;
+  }
+  .overlay-close:hover {
+    background: var(--ink); color: var(--bg); transform: scale(1.05);
+  }
+  .overlay-close svg { width: 16px; height: 16px; }
+
+  .overlay-label {
+    position: absolute; top: 24px; left: 28px; z-index: 110;
+    font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--muted); pointer-events: none;
+  }
+  .overlay-label strong {
+    color: var(--ink); font-weight: 400; margin-right: 10px;
+  }
+
+  .gallery {
+    width: 100%; height: 100%;
+    overflow-x: auto; overflow-y: hidden;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none; -ms-overflow-style: none;
+  }
+  .gallery::-webkit-scrollbar { display: none; }
+
+  .gallery-track { display: flex; height: 100%; align-items: stretch; }
+
+  .slide {
+    flex-shrink: 0; height: 100%;
+    scroll-snap-align: start; scroll-snap-stop: always;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: clamp(60px, 8vh, 90px) clamp(32px, 4vw, 64px) clamp(40px, 6vh, 72px);
+    position: relative;
+  }
+
+  .slide--hero {
+    width: clamp(560px, 70vw, 1000px);
+    justify-content: center;
+  }
+  .hero-inner { width: 100%; max-width: 720px; }
+  .project-eyebrow {
+    font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--muted); margin: 0 0 24px;
+  }
+  .project-headline {
+    font-size: clamp(2rem, 4.5vw, 3.6rem);
+    font-weight: 400; line-height: 1.05;
+    margin: 0 0 clamp(28px, 5vh, 48px);
+    letter-spacing: -0.01em;
+  }
+  .project-headline em { font-style: italic; color: var(--muted); }
+
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 24px 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule);
+  }
+  .meta-item dt {
+    font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--muted); margin: 0 0 6px;
+  }
+  .meta-item dd { font-size: 0.95rem; margin: 0; color: var(--ink); }
+
+  .slide--image { width: clamp(520px, 70vw, 1000px); }
+  .slide--image.slide--wide { width: clamp(680px, 95vw, 1400px); }
+  .slide--image.slide--tall { width: clamp(380px, 45vw, 620px); }
+
+  .slide-figure {
+    flex: 1 1 auto; width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+    gap: clamp(16px, 2.5vh, 28px);
+    min-height: 0;
+  }
+  .slide-image {
+    flex: 1 1 auto; width: 100%;
+    background: var(--rule); overflow: hidden;
+    position: relative; min-height: 0;
+  }
+  .slide-image img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+  }
+  .slide-caption {
+    flex: 0 0 auto; max-width: 640px;
+    font-size: clamp(0.88rem, 1vw, 1rem); line-height: 1.55;
+    color: var(--ink);
+  }
+  .caption-label {
+    font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+    font-size: 0.74rem; margin-right: 4px;
+  }
+  .caption-label::after {
+    content: " — "; font-weight: 400; color: var(--muted);
+    margin: 0 4px 0 6px;
+  }
+
+  .scroll-hint {
+    position: absolute; right: 24px; bottom: 20px; z-index: 105;
+    display: flex; align-items: center; gap: 10px;
+    font-size: 0.68rem; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--muted); pointer-events: none;
+    transition: opacity 0.5s ease;
+  }
+  .scroll-hint.is-hidden { opacity: 0; }
+  .scroll-hint svg {
+    width: 28px; height: auto;
+    animation: nudge 1.6s ease-in-out infinite;
+  }
+  @keyframes nudge {
+    0%, 100% { transform: translateX(0); }
+    50%      { transform: translateX(5px); }
+  }
+
+  /* DRAG CURSOR — gallery becomes "grab"-able */
+  .gallery { cursor: grab; }
+  .gallery.is-dragging { cursor: grabbing; scroll-behavior: auto; }
+  .gallery.is-dragging * { user-select: none; pointer-events: none; }
+
+  /* BOTTOM SCRUBBER — press, hold, drag to scrub horizontally */
+  .scrubber {
+    position: absolute;
+    left: clamp(28px, 5vw, 64px);
+    right: clamp(28px, 5vw, 64px);
+    bottom: clamp(16px, 2.5vh, 28px);
+    height: 28px;
+    z-index: 108;
+    display: flex; align-items: center;
+    cursor: pointer;
+    opacity: 0; transform: translateY(6px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    pointer-events: none;
+    touch-action: none;
+  }
+  .scrubber.is-ready {
+    opacity: 1; transform: translateY(0); pointer-events: auto;
+  }
+  .scrubber-track {
+    position: relative;
+    width: 100%; height: 1px;
+    background: var(--rule);
+  }
+  .scrubber-progress {
+    position: absolute;
+    left: 0; top: 0; height: 100%;
+    width: 0%;
+    background: var(--ink);
+    transition: width 0.08s linear;
+  }
+  .scrubber.is-active .scrubber-progress { transition: none; }
+  .scrubber-thumb {
+    position: absolute;
+    top: 50%;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--ink);
+    transform: translate(-50%, -50%);
+    transition: width 0.2s ease, height 0.2s ease, background 0.2s ease;
+  }
+  .scrubber.is-active .scrubber-thumb,
+  .scrubber:hover .scrubber-thumb {
+    width: 14px; height: 14px;
+  }
+  .scrubber-count {
+    position: absolute;
+    right: 0; bottom: 14px;
+    font-size: 0.68rem; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* MOBILE */
+  @media (max-width: 768px) {
+    :root { --header-h: 72px; --expanded-margin: 12px; }
+    .logo svg { height: 36px; }
+    .nav { display: none; }
+    .nav-toggle { display: block; }
+    .nav.is-open {
+      display: flex; position: absolute;
+      top: var(--header-h); left: 0; right: 0;
+      flex-direction: column; gap: 0;
+      background: var(--bg); border-bottom: 1px solid var(--rule);
+      padding: 16px var(--gutter) 24px;
+    }
+    .nav.is-open a { padding: 14px 0; border-bottom: 1px solid var(--rule); }
+    .nav.is-open a:last-child { border-bottom: 0; }
+
+    .project-meta { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .project-info { text-align: left; }
+    .project--tall .project-image { aspect-ratio: 3 / 4; }
+    .footer-inner { flex-direction: column; align-items: flex-start; }
+
+    .slide--hero,
+    .slide--image,
+    .slide--image.slide--wide,
+    .slide--image.slide--tall {
+      width: 92vw;
+      padding: 60px 16px 32px;
+    }
+    .overlay-label { top: 16px; left: 18px; font-size: 0.62rem; }
+    .overlay-close { top: 10px; right: 10px; width: 38px; height: 38px; }
+    .scrubber { left: 18px; right: 18px; bottom: 14px; }
+    .scrubber-count { font-size: 0.6rem; }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .project {
+      opacity: 0; transform: translateY(12px);
+      animation: fadeUp 0.8s ease forwards;
+    }
+    .project:nth-child(1) { animation-delay: 0.05s; }
+    .project:nth-child(2) { animation-delay: 0.15s; }
+    .project:nth-child(3) { animation-delay: 0.25s; }
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+  }
+</style>
 </head>
 
 <body>
-  <!--
-    This is the full-screen "stage" like the FYI demo:
-    - black background
-    - centered figure
-  -->
-  <div class="stage" id="stage">
-    <div
-      class="figure"
-      style="
-        --glassSectionWidth: 24px;  /* stripe width */
-        --blur: 20px;              /* blur strength */
-        --glassRotation: -16deg;   /* glass angle */
-        --gradientRotation: 12deg; /* source gradient angle */
-      "
-    >
-      <!--
-        COLOR SOURCE LAYER (the rectangle behind)
-        This is what makes color-dodge look “refractive”.
-      -->
-      <div class="source"></div>
 
-      <!--
-        FROSTED GLASS LAYER (sits on top)
-        Moves slightly with pointer via --x and --y
-      -->
-      <div class="glass"></div>
+<header class="site-header">
+  <div class="header-inner">
+    <a href="#" class="logo" aria-label="Sordo Studio — Home">
+      <svg viewBox="0 0 680 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Sordo Studio">
+        <text x="340" y="105" text-anchor="middle"
+              font-family="Georgia, 'Times New Roman', serif"
+              font-style="italic" font-size="96" fill="#9A9A9A">Sordo</text>
+        <text x="340" y="200" text-anchor="middle"
+              font-family="Georgia, 'Times New Roman', serif"
+              font-size="96" fill="#141413">studio</text>
+      </svg>
+    </a>
+
+    <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="primary-nav">
+      <span></span><span></span><span></span>
+    </button>
+
+    <nav class="nav" id="primary-nav" aria-label="Primary">
+      <a href="#projects">Architecture</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<!-- The feed: each project is a <button> so clicking opens the overlay
+     in place — no page navigation. -->
+<main class="feed" id="projects">
+
+  <button class="project" data-project="01">
+    <div class="project-image"><div class="placeholder">Project 01</div></div>
+    <div class="project-meta">
+      <h2 class="project-title">Casa del Sur</h2>
+      <div class="project-info"><span>2025</span><span>Tangier</span></div>
     </div>
+  </button>
+
+  <button class="project project--wide" data-project="02">
+    <div class="project-image"><div class="placeholder">Project 02</div></div>
+    <div class="project-meta">
+      <h2 class="project-title">Pavilion in the Olive Grove</h2>
+      <div class="project-info"><span>2024</span><span>Andalucía</span></div>
+    </div>
+  </button>
+
+  <button class="project project--tall" data-project="03">
+    <div class="project-image"><div class="placeholder">Project 03</div></div>
+    <div class="project-meta">
+      <h2 class="project-title">Tower House</h2>
+      <div class="project-info"><span>2024</span><span>Tetouan</span></div>
+    </div>
+  </button>
+
+  <button class="project" data-project="04">
+    <div class="project-image"><div class="placeholder">Project 04</div></div>
+    <div class="project-meta">
+      <h2 class="project-title">Cultural Center Refurbishment</h2>
+      <div class="project-info"><span>2023</span><span>Madrid</span></div>
+    </div>
+  </button>
+
+  <button class="project project--wide" data-project="05">
+    <div class="project-image"><div class="placeholder">Project 05</div></div>
+    <div class="project-meta">
+      <h2 class="project-title">Coastal Studio</h2>
+      <div class="project-info"><span>2023</span><span>Asilah</span></div>
+    </div>
+  </button>
+
+  <button class="project" data-project="06">
+    <div class="project-image"><div class="placeholder">Project 06</div></div>
+    <div class="project-meta">
+      <h2 class="project-title">Library &amp; Reading Room</h2>
+      <div class="project-info"><span>2022</span><span>Rabat</span></div>
+    </div>
+  </button>
+
+</main>
+
+<footer class="site-footer" id="contact">
+  <div class="footer-inner">
+    <div>© 2026 Sordo Studio</div>
+    <div><a href="mailto:hello@sordostudio.com">hello@sordostudio.com</a></div>
+  </div>
+</footer>
+
+<!-- Overlay: hidden until a project is clicked -->
+<div class="overlay-backdrop" id="overlayBackdrop" aria-hidden="true"></div>
+
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="overlayLabel" aria-hidden="true">
+  <div class="overlay-label" id="overlayLabel"></div>
+
+  <button class="overlay-close" id="overlayClose" aria-label="Close project">
+    <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <line x1="2" y1="2" x2="14" y2="14" stroke="currentColor" stroke-width="1.5" />
+      <line x1="14" y1="2" x2="2" y2="14" stroke="currentColor" stroke-width="1.5" />
+    </svg>
+  </button>
+
+  <div class="gallery" id="gallery" tabindex="0">
+    <div class="gallery-track" id="galleryTrack"></div>
   </div>
 
-  <script>
-    // Pointer-driven movement (matches FYI concept: subtle offset to feel "alive")
-    const stage = document.getElementById("stage");
+  <div class="scroll-hint" id="scrollHint">
+    <span>Scroll, drag, or use the slider</span>
+    <svg viewBox="0 0 32 12" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <line x1="0" y1="6" x2="28" y2="6" stroke="currentColor" stroke-width="1" />
+      <polyline points="22,1 28,6 22,11" fill="none" stroke="currentColor" stroke-width="1" />
+    </svg>
+  </div>
 
-    stage.addEventListener("pointermove", (e) => {
-      const r = stage.getBoundingClientRect();
-      const nx = (e.clientX - r.left) / r.width;   // 0..1
-      const ny = (e.clientY - r.top) / r.height;   // 0..1
+  <!-- Bottom scrubber: press, hold, and drag to scrub through images -->
+  <div class="scrubber" id="scrubber" role="slider"
+       aria-label="Scrub through project images"
+       aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
+       tabindex="0">
+    <div class="scrubber-count" id="scrubberCount">01 / 01</div>
+    <div class="scrubber-track">
+      <div class="scrubber-progress" id="scrubberProgress"></div>
+      <div class="scrubber-thumb" id="scrubberThumb"></div>
+    </div>
+  </div>
+</div>
 
-      // Convert to -1..1 so it moves left/right, up/down around center
-      const x = (nx - 0.5) * 2;
-      const y = (ny - 0.5) * 2;
+<script>
+  /* ============================================================
+     PROJECT DATA
+     Edit this object to change what each project shows.
+     ============================================================ */
+  const PROJECTS = {
+    '01': {
+      title: 'Casa del Sur, <em>a courtyard house</em>',
+      eyebrow: 'Project 01 — 2025',
+      meta: [
+        ['Location', 'Tangier, Morocco'],
+        ['Client', 'Private'],
+        ['Program', 'Single-family residence'],
+        ['Area', '320 m²'],
+        ['Status', 'Completed 2025'],
+        ['Role', 'Lead architect'],
+      ],
+      slides: [
+        { label: 'Site',      width: 'wide', caption: 'The house sits on a south-facing plot above the Strait, oriented around a single deep courtyard that draws light into every room.' },
+        { label: 'Courtyard',                caption: 'A shaded patio anchors the plan. Living spaces wrap it on three sides, with the fourth opening to the garden through a deep loggia.' },
+        { label: 'Stair',     width: 'tall', caption: 'A lime-washed stair rises from the entry hall, lit by a slot skylight that traces the sun\u2019s path through the day.' },
+        { label: 'Living',                   caption: 'The main room is a long, low volume with a single horizontal opening framing the sea \u2014 a borrowed view that does the work of decoration.' },
+        { label: 'Plan',      width: 'wide', caption: 'Ground floor plan. The courtyard is the project\u2019s organising figure; circulation runs around it, never through it.' },
+        { label: 'Materials',                caption: 'Lime render, oak joinery, and locally quarried stone for the floors. The palette is deliberately narrow \u2014 three materials, used everywhere.' },
+        { label: 'Dusk',      width: 'wide', caption: 'At dusk the courtyard lanterns turn the house inside-out: the patio reads as the brightest room, with the building receding around it.' },
+      ],
+    },
+    '02': {
+      title: 'Pavilion in the <em>Olive Grove</em>',
+      eyebrow: 'Project 02 — 2024',
+      meta: [
+        ['Location', 'Andalucía, Spain'],
+        ['Program', 'Garden pavilion'],
+        ['Area', '60 m²'],
+        ['Status', 'Completed 2024'],
+      ],
+      slides: [
+        { label: 'Approach',  width: 'wide', caption: 'A single low volume sits beneath the canopy of an existing olive grove, its long axis aligned with the rows of trees.' },
+        { label: 'Roof',                     caption: 'The roof is a thin timber plane on slender steel posts \u2014 a horizon, not a building.' },
+        { label: 'Interior',                 caption: 'Inside, a continuous bench runs the full length of the south wall, looking out into the grove.' },
+        { label: 'Detail',    width: 'tall', caption: 'A copper drip edge marks the perimeter of the roof and weathers slowly into the colour of the bark.' },
+      ],
+    },
+    '03': {
+      title: 'Tower House',
+      eyebrow: 'Project 03 — 2024',
+      meta: [
+        ['Location', 'Tetouan, Morocco'],
+        ['Program', 'Residence'],
+        ['Area', '180 m²'],
+        ['Status', 'Completed 2024'],
+      ],
+      slides: [
+        { label: 'Volume',    width: 'tall', caption: 'A narrow plot called for height instead of breadth. The house stacks four small rooms vertically.' },
+        { label: 'Stair',                    caption: 'The stair is the building\u2019s spine \u2014 not a service space but the project\u2019s most generous room.' },
+        { label: 'Roof',      width: 'wide', caption: 'The roof terrace gives back to the city a piece of ground the footprint took from it.' },
+      ],
+    },
+    '04': {
+      title: 'Cultural Center <em>Refurbishment</em>',
+      eyebrow: 'Project 04 — 2023',
+      meta: [
+        ['Location', 'Madrid, Spain'],
+        ['Program', 'Cultural center'],
+        ['Area', '1,200 m²'],
+        ['Status', 'Completed 2023'],
+      ],
+      slides: [
+        { label: 'Before',                   caption: 'A 1970s civic hall, structurally sound but interior-dark and disconnected from the street.' },
+        { label: 'Strategy', width: 'wide',  caption: 'The renovation removes a perimeter wall on the ground floor and replaces it with a colonnade, opening the building to the plaza.' },
+        { label: 'Foyer',                    caption: 'The new foyer is a single double-height room \u2014 a piece of public space pulled inside the building.' },
+      ],
+    },
+    '05': {
+      title: 'Coastal Studio',
+      eyebrow: 'Project 05 — 2023',
+      meta: [
+        ['Location', 'Asilah, Morocco'],
+        ['Program', 'Artist\u2019s studio'],
+        ['Area', '90 m²'],
+        ['Status', 'Completed 2023'],
+      ],
+      slides: [
+        { label: 'Site',      width: 'wide', caption: 'A small studio for a painter, perched on the dunes outside Asilah, oriented to the north light.' },
+        { label: 'Window',                   caption: 'A single tall window, the height of the room, frames the horizon and provides the only artificial-free light source.' },
+        { label: 'Walls',     width: 'tall', caption: 'The interior walls are unpainted lime plaster \u2014 a working surface as much as a finish.' },
+      ],
+    },
+    '06': {
+      title: 'Library &amp; <em>Reading Room</em>',
+      eyebrow: 'Project 06 — 2022',
+      meta: [
+        ['Location', 'Rabat, Morocco'],
+        ['Program', 'Library'],
+        ['Area', '460 m²'],
+        ['Status', 'Completed 2022'],
+      ],
+      slides: [
+        { label: 'Reading',  width: 'wide', caption: 'The reading room is a single quiet volume, lit from above by a row of clerestory windows.' },
+        { label: 'Stacks',                  caption: 'Bookshelves line the perimeter walls, leaving the centre of the room open for tables and people.' },
+        { label: 'Detail',   width: 'tall', caption: 'Oak shelving carried on bronze brackets, sized so a hand naturally reaches for the third shelf up.' },
+      ],
+    },
+  };
 
-      // Put vars on the stage so CSS can use them
-      stage.style.setProperty("--x", x.toFixed(3));
-      stage.style.setProperty("--y", y.toFixed(3));
+  /* ============================================================
+     OVERLAY OPEN / CLOSE
+     ============================================================ */
+  const overlay      = document.getElementById('overlay');
+  const backdrop     = document.getElementById('overlayBackdrop');
+  const closeBtn     = document.getElementById('overlayClose');
+  const galleryTrack = document.getElementById('galleryTrack');
+  const gallery      = document.getElementById('gallery');
+  const overlayLabel = document.getElementById('overlayLabel');
+  const scrollHint   = document.getElementById('scrollHint');
+  const scrubber       = document.getElementById('scrubber');
+  const scrubberProgress = document.getElementById('scrubberProgress');
+  const scrubberThumb    = document.getElementById('scrubberThumb');
+  const scrubberCount    = document.getElementById('scrubberCount');
+
+  let isOpen = false;
+  let hintTimer = null;
+  let hasInteracted = false;
+
+  function buildOverlay(projectId) {
+    const data = PROJECTS[projectId];
+    if (!data) return false;
+
+    // Top-left label: "Project 01 — 2025  Tangier, Morocco"
+    overlayLabel.innerHTML =
+      '<strong>' + data.eyebrow + '</strong>' + data.meta[0][1];
+
+    const heroHTML = `
+      <section class="slide slide--hero">
+        <div class="hero-inner">
+          <p class="project-eyebrow">${data.eyebrow}</p>
+          <h1 class="project-headline">${data.title}</h1>
+          <dl class="meta-grid">
+            ${data.meta.map(([k, v]) => `
+              <div class="meta-item">
+                <dt>${k}</dt>
+                <dd>${v}</dd>
+              </div>`).join('')}
+          </dl>
+        </div>
+      </section>
+    `;
+
+    const slidesHTML = data.slides.map((s, i) => {
+      const widthClass = s.width === 'wide' ? ' slide--wide'
+                       : s.width === 'tall' ? ' slide--tall' : '';
+      const imgHTML = s.image
+        ? `<img src="${s.image}" alt="${s.label}" />`
+        : `<div class="placeholder">Image ${String(i + 1).padStart(2, '0')} — ${s.label}</div>`;
+      return `
+        <section class="slide slide--image${widthClass}">
+          <figure class="slide-figure">
+            <div class="slide-image">${imgHTML}</div>
+            <figcaption class="slide-caption">
+              <span class="caption-label">${s.label}</span>${s.caption}
+            </figcaption>
+          </figure>
+        </section>
+      `;
+    }).join('');
+
+    galleryTrack.innerHTML = heroHTML + slidesHTML;
+    gallery.scrollLeft = 0;
+    return true;
+  }
+
+  function openProject(projectId) {
+    if (!buildOverlay(projectId)) return;
+
+    document.body.classList.add('is-expanded');
+    overlay.classList.add('is-open');
+    backdrop.classList.add('is-open');
+    overlay.setAttribute('aria-hidden', 'false');
+    backdrop.setAttribute('aria-hidden', 'false');
+    isOpen = true;
+
+    // Reset and re-arm the scroll hint
+    hasInteracted = false;
+    scrollHint.classList.remove('is-hidden');
+    clearTimeout(hintTimer);
+    hintTimer = setTimeout(hideHint, 6000);
+
+    // Reveal the scrubber once the open transition has settled, then sync
+    setTimeout(() => {
+      scrubber.classList.add('is-ready');
+      if (window.updateScrubber) window.updateScrubber();
+    }, 350);
+
+    // Focus the gallery so keyboard arrows work right away
+    setTimeout(() => gallery.focus({ preventScroll: true }), 50);
+  }
+
+  function closeProject() {
+    if (!isOpen) return;
+    overlay.classList.remove('is-open');
+    backdrop.classList.remove('is-open');
+    overlay.setAttribute('aria-hidden', 'true');
+    backdrop.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('is-expanded');
+    isOpen = false;
+    clearTimeout(hintTimer);
+
+    scrubber.classList.remove('is-ready', 'is-active');
+
+    // Clear contents after the close transition completes
+    setTimeout(() => { galleryTrack.innerHTML = ''; }, 400);
+  }
+
+  function hideHint() {
+    if (hasInteracted) return;
+    hasInteracted = true;
+    scrollHint.classList.add('is-hidden');
+  }
+
+  // Wire up project buttons
+  document.querySelectorAll('.project').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.getAttribute('data-project');
+      openProject(id);
     });
-  </script>
+  });
+
+  // Three ways to close: X button, click backdrop, Escape key
+  closeBtn.addEventListener('click', closeProject);
+  backdrop.addEventListener('click', closeProject);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isOpen) closeProject();
+  });
+
+  /* ============================================================
+     HORIZONTAL SCROLL — wheel/keyboard inside the overlay
+     ============================================================ */
+  gallery.addEventListener('wheel', (e) => {
+    if (!isOpen) return;
+    // Native horizontal swipe (trackpad): leave it alone
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+    // Vertical wheel becomes horizontal scroll
+    e.preventDefault();
+    gallery.scrollLeft += e.deltaY;
+    hideHint();
+  }, { passive: false });
+
+  gallery.addEventListener('keydown', (e) => {
+    const step = window.innerWidth * 0.8;
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
+      e.preventDefault();
+      gallery.scrollBy({ left: step, behavior: 'smooth' });
+      hideHint();
+    } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+      e.preventDefault();
+      gallery.scrollBy({ left: -step, behavior: 'smooth' });
+      hideHint();
+    }
+  });
+
+  gallery.addEventListener('scroll', hideHint, { passive: true });
+
+  /* ============================================================
+     DRAG-TO-SCROLL — click and drag the gallery to scrub through it
+     ============================================================ */
+  (function () {
+    let isDown = false;
+    let startX = 0;
+    let startScroll = 0;
+    let moved = false;
+
+    // Pointer Events covers mouse, pen, and touch in one path.
+    gallery.addEventListener('pointerdown', (e) => {
+      if (!isOpen) return;
+      // Don't hijack drags that begin on the close button or scrubber.
+      if (e.target.closest('.overlay-close, .scrubber')) return;
+      // Only primary button for mice; touch/pen always pass.
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+
+      isDown = true;
+      moved = false;
+      startX = e.clientX;
+      startScroll = gallery.scrollLeft;
+      gallery.classList.add('is-dragging');
+      // Capture so we keep getting pointermove even if the cursor leaves the element.
+      try { gallery.setPointerCapture(e.pointerId); } catch (_) {}
+      hideHint();
+    });
+
+    gallery.addEventListener('pointermove', (e) => {
+      if (!isDown) return;
+      const dx = e.clientX - startX;
+      if (Math.abs(dx) > 3) moved = true;
+      gallery.scrollLeft = startScroll - dx;
+    });
+
+    function endDrag(e) {
+      if (!isDown) return;
+      isDown = false;
+      gallery.classList.remove('is-dragging');
+      try { gallery.releasePointerCapture(e.pointerId); } catch (_) {}
+    }
+    gallery.addEventListener('pointerup', endDrag);
+    gallery.addEventListener('pointercancel', endDrag);
+    gallery.addEventListener('pointerleave', endDrag);
+
+    // Suppress the click that would otherwise fire after a drag (so dragging
+    // off the close button or a link doesn't accidentally trigger it).
+    gallery.addEventListener('click', (e) => {
+      if (moved) { e.preventDefault(); e.stopPropagation(); moved = false; }
+    }, true);
+
+    // Native drag image on <img> would interfere — disable it.
+    gallery.addEventListener('dragstart', (e) => e.preventDefault());
+  })();
+
+  /* ============================================================
+     SCRUBBER — press, hold, and drag to scrub through images
+     ============================================================ */
+  (function () {
+    let isScrubbing = false;
+    let isSyncingFromScroll = false;
+
+    function getMaxScroll() {
+      return Math.max(0, gallery.scrollWidth - gallery.clientWidth);
+    }
+
+    function getSlideCount() {
+      // Count image slides (skip the hero); fall back to total slides.
+      const imageSlides = galleryTrack.querySelectorAll('.slide--image');
+      return imageSlides.length || galleryTrack.querySelectorAll('.slide').length || 1;
+    }
+
+    function getCurrentSlideIndex() {
+      const max = getMaxScroll();
+      if (max <= 0) return 1;
+      const ratio = gallery.scrollLeft / max;
+      const total = getSlideCount();
+      // 1-indexed display number, clamped.
+      return Math.min(total, Math.max(1, Math.round(ratio * (total - 1)) + 1));
+    }
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    // Update the visible position of the thumb/progress + the count readout.
+    function updateScrubber() {
+      const max = getMaxScroll();
+      const pct = max > 0 ? (gallery.scrollLeft / max) * 100 : 0;
+      const clamped = Math.min(100, Math.max(0, pct));
+      scrubberProgress.style.width = clamped + '%';
+      scrubberThumb.style.left = clamped + '%';
+      scrubber.setAttribute('aria-valuenow', clamped.toFixed(0));
+
+      const total = getSlideCount();
+      const current = getCurrentSlideIndex();
+      scrubberCount.textContent = pad(current) + ' / ' + pad(total);
+    }
+    // Expose for openProject().
+    window.updateScrubber = updateScrubber;
+
+    // Keep the scrubber in sync as the gallery scrolls (wheel, drag, keys).
+    gallery.addEventListener('scroll', () => {
+      if (isScrubbing) return; // we're driving scrollLeft ourselves
+      isSyncingFromScroll = true;
+      updateScrubber();
+      isSyncingFromScroll = false;
+    }, { passive: true });
+
+    // Re-measure on resize (slide widths use clamp/vw).
+    window.addEventListener('resize', () => {
+      if (isOpen) updateScrubber();
+    });
+
+    // Convert a pointer X into a 0–1 ratio along the scrubber track.
+    function ratioFromPointer(clientX) {
+      const rect = scrubber.getBoundingClientRect();
+      const x = clientX - rect.left;
+      return Math.min(1, Math.max(0, x / rect.width));
+    }
+
+    function applyRatio(ratio) {
+      gallery.scrollLeft = ratio * getMaxScroll();
+      updateScrubber();
+    }
+
+    scrubber.addEventListener('pointerdown', (e) => {
+      if (!isOpen) return;
+      isScrubbing = true;
+      scrubber.classList.add('is-active');
+      try { scrubber.setPointerCapture(e.pointerId); } catch (_) {}
+      applyRatio(ratioFromPointer(e.clientX));
+      hideHint();
+      e.preventDefault();
+    });
+
+    scrubber.addEventListener('pointermove', (e) => {
+      if (!isScrubbing) return;
+      applyRatio(ratioFromPointer(e.clientX));
+    });
+
+    function endScrub(e) {
+      if (!isScrubbing) return;
+      isScrubbing = false;
+      scrubber.classList.remove('is-active');
+      try { scrubber.releasePointerCapture(e.pointerId); } catch (_) {}
+    }
+    scrubber.addEventListener('pointerup', endScrub);
+    scrubber.addEventListener('pointercancel', endScrub);
+
+    // Keyboard support on the scrubber for accessibility.
+    scrubber.addEventListener('keydown', (e) => {
+      const max = getMaxScroll();
+      if (max <= 0) return;
+      const small = max * 0.05;
+      const big   = max * 0.20;
+      let handled = true;
+      switch (e.key) {
+        case 'ArrowRight': gallery.scrollLeft += small; break;
+        case 'ArrowLeft':  gallery.scrollLeft -= small; break;
+        case 'PageDown':   gallery.scrollLeft += big;   break;
+        case 'PageUp':     gallery.scrollLeft -= big;   break;
+        case 'Home':       gallery.scrollLeft = 0;      break;
+        case 'End':        gallery.scrollLeft = max;    break;
+        default: handled = false;
+      }
+      if (handled) {
+        e.preventDefault();
+        updateScrubber();
+        hideHint();
+      }
+    });
+  })();
+
+  /* ============================================================
+     MOBILE NAV TOGGLE
+     ============================================================ */
+  const toggle = document.querySelector('.nav-toggle');
+  const nav = document.querySelector('.nav');
+  toggle.addEventListener('click', () => {
+    const open = nav.classList.toggle('is-open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  });
+
+  /* ============================================================
+     SCROLL-DRIVEN SCALE on the feed (slow & long-lasting)
+     ============================================================ */
+  (function () {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const feed = document.querySelector('.feed');
+    if (!feed) return;
+
+    const MIN_SCALE = 0.82;
+    const SENSITIVITY = 0.13;
+    const DECAY = 0.96;
+    const EASE_IN = 0.08;
+    const EASE_OUT = 0.04;
+
+    let lastY = window.scrollY;
+    let lastT = performance.now();
+    let velocity = 0;
+    let scale = 1;
+    let targetScale = 1;
+    let rafId = null;
+
+    function onScroll() {
+      if (isOpen) return; // pause while overlay is open
+      const now = performance.now();
+      const dy = window.scrollY - lastY;
+      const dt = Math.max(now - lastT, 1);
+      const instant = Math.abs(dy) / dt;
+      velocity = velocity * 0.3 + instant * 0.7;
+      lastY = window.scrollY;
+      lastT = now;
+      if (rafId === null) rafId = requestAnimationFrame(tick);
+    }
+
+    function tick() {
+      velocity *= DECAY;
+      targetScale = Math.max(MIN_SCALE, 1 - velocity * SENSITIVITY);
+      const ease = targetScale < scale ? EASE_IN : EASE_OUT;
+      scale += (targetScale - scale) * ease;
+
+      const rect = feed.getBoundingClientRect();
+      const viewportCenterY = window.innerHeight / 2;
+      const originY = (viewportCenterY - rect.top) / scale;
+      feed.style.transformOrigin = '50% ' + originY.toFixed(2) + 'px';
+      feed.style.transform = 'scale(' + scale.toFixed(4) + ')';
+
+      if (velocity < 0.0002 && Math.abs(scale - 1) < 0.0003) {
+        feed.style.transform = 'scale(1)';
+        scale = 1;
+        rafId = null;
+        return;
+      }
+      rafId = requestAnimationFrame(tick);
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+  })();
+</script>
+
 </body>
 </html>
